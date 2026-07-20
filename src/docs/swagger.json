@@ -1,0 +1,104 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LibriX API",
+    "description": "Sistema de gestão para Bibliotecas",
+    "contact": { "email": "edu-godoi@hotmail.com" },
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "http://localhost:3334", "description": "API desenvolvimento" }],
+  "paths": {
+    "/register": {
+      "post": {
+        "summary": "Registrar novo usuário",
+        "tags": ["Register"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Register" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário registrado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Register" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "summary": "Autenticar usuário",
+        "tags": ["Authenticate"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Authenticate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário autenticado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Authenticate" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Register": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "johndoe@example.com" },
+          "phone": { "type": "string", "example": "99 99999-9999" },
+          "profile": { "type": "string", "example": "ESTUDENT" },
+          "situation": { "type": "string", "example": "ACTIVE" },
+          "password": { "type": "string", "example": "John@123" }
+        }
+      },
+      "Authenticate": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "johndoe@example.com" },
+          "password": { "type": "string", "example": "John@123" }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Não autorizado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string", "example": "Unauthorized" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
