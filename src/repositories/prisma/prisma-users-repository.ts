@@ -1,3 +1,4 @@
+import { AppError } from '@/utils/errors/appError';
 import type { Prisma, User } from '../../../generated/prisma/client';
 import { prisma } from '../../lib/prisma';
 import type { IUpdatedUserDTO } from '../dto/user-dto';
@@ -111,7 +112,21 @@ export class PrismaUsersRepository implements UsersRepository {
     return user;
   }
 
-  async delete(id: string): Promise<void> {
-    throw new Error('Method not implemented.');
+  async delete(id: string) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new AppError('error', 'User not found.');
+    }
+
+    await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
