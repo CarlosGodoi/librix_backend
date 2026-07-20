@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum Profile {
+  ADMIN
+  LIBRARIAN
+  VISITOR
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String
+  profile   Profile
+  situation Status   @default(ACTIVE)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  loans Loan[]
+
+  @@map("users")
+}
+
+model Book {
+  id        String   @id @default(uuid())
+  title     String
+  author    String
+  isbn      String   @unique
+  publisher String
+  category  String
+  year      DateTime
+  copies    Int
+  synopsis  String?
+  coverUrl  String?
+
+  loans Loan[]
+
+  @@map("books")
+}
+
+enum LoanStatus {
+  BORROWED
+  RETURNED
+  OVERDUE
+}
+
+model Loan {
+  id         String     @id @default(uuid())
+  userId     String
+  bookId     String
+  loanDate   DateTime   @default(now())
+  dueDate    DateTime
+  returnDate DateTime?
+  status     LoanStatus
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("loans")
+}

@@ -1,0 +1,9 @@
+# Node Modules
+node_modules
+
+#.env
+.env
+
+#dist
+dist
+/generated/prisma
