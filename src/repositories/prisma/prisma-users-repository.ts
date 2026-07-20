@@ -90,7 +90,6 @@ export class PrismaUsersRepository implements UsersRepository {
         id,
       },
     });
-    console.log('user findById =>', user);
 
     return user;
   }

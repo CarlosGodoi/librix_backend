@@ -9,8 +9,6 @@ export async function getUserById(req: Request, res: Response, nex: NextFunction
 
     const user = await getUserByIdUseCase.execute(id);
 
-    console.log('Controller user =>', user);
-
     return res.status(200).send({ user });
   } catch (error) {
     if (error) {

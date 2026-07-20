@@ -7,7 +7,6 @@ export class GetUserByIdUseCase {
 
   async execute(id: string): Promise<User | null> {
     const user = await this.usersRepository.findById(id);
-    console.log('User id =>', user);
 
     if (!user) {
       throw new AppError('error', 'User not found.');

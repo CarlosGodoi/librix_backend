@@ -6,7 +6,7 @@ const getUserByIdRouter = Router();
 
 getUserByIdRouter.get(
   '/:id',
-  autorize('ADMIN'),
+  autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await getUserById(req, res, next);
   },

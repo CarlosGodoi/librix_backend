@@ -3,6 +3,7 @@ import { AppError } from '../../utils/errors/appError';
 import { env } from '../../config/index';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../lib/prisma';
+import type { TokenPayload } from '@/services/type/token-payload';
 
 export async function verifyJwt(req: Request, _: Response, next: NextFunction) {
   const authHeader = req.headers.authorization as string;
@@ -18,10 +19,10 @@ export async function verifyJwt(req: Request, _: Response, next: NextFunction) {
   }
 
   try {
-    const payload = jwt.verify(token, env.JWT_SECRET) as { sub: string };
+    const payload = jwt.verify(token, env.JWT_SECRET) as TokenPayload;
 
     const userExists = await prisma.user.findUnique({
-      where: { id: payload.sub },
+      where: { id: payload.userId },
     });
 
     if (!userExists) {

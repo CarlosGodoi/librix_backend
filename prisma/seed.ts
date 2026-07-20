@@ -20,7 +20,7 @@ async function userSeed() {
       phone: '55 99988-9809',
       profile: 'ADMIN',
       situation: 'ACTIVE',
-      password: await hash('Test@123', 8),
+      password: await hash('Admin@123', 8),
       createdAt: new Date(),
     },
   });
@@ -45,7 +45,7 @@ async function userSeed() {
     },
     update: {},
     create: {
-      name: 'Administrador',
+      name: 'Bibliotecario',
       email: 'bibliotecario@librix.com',
       phone: '55 99743-3328',
       profile: 'LIBRARIAN',

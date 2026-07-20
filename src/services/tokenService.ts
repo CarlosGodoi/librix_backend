@@ -1,5 +1,6 @@
 import { env } from '@/config';
 import Jwt from 'jsonwebtoken';
+import type { TokenPayload } from './type/token-payload';
 
 const { JWT_SECRET, JWT_REFRESH_SECRET = 'refresh-token-secret' } = env;
 
@@ -8,7 +9,7 @@ if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
 }
 
 export class TokenService {
-  static generateAccessToken(payload: object): string {
+  static generateAccessToken(payload: TokenPayload): string {
     return Jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
   }
 
