@@ -19,12 +19,12 @@ describe('GetAllUsers Use Case', () => {
     const role = 'ADMIN';
 
     const { user } = await registerUserUseCase.execute({
-      name: 'John Doe',
-      email: 'johndoe@mail.com',
+      name: 'user',
+      email: 'user@mail.com',
       phone: '55 99988-9809',
       profile: role,
       situation: 'ACTIVE',
-      password: 'Test@123',
+      password: 'User@123',
     });
     expect(user.profile).toBe(role);
 
