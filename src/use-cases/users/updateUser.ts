@@ -31,8 +31,6 @@ export class UpdateUserUserCase {
       updatedAt: updatedAt ?? new Date(),
     });
 
-    console.log('useCase update =>', updatedUser);
-
     return updatedUser;
   }
 }
