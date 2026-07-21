@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
     - name: Checkout repository
@@ -32,9 +32,6 @@ jobs:
 
     - name: Install dependencies
       run: pnpm install
-
-    - name: Generate Prisma Client
-      run: pnpm generate
 
     - name: Run tests
       run: pnpm test
