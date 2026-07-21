@@ -7,11 +7,17 @@
     "version": "1.0.0"
   },
   "servers": [{ "url": "http://localhost:3334", "description": "API desenvolvimento" }],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Gestão de usuários (registro, autenticação, consulta e remoção)"
+    }
+  ],
   "paths": {
     "/register": {
       "post": {
         "summary": "Registrar novo usuário",
-        "tags": ["Register"],
+        "tags": ["Users"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -24,7 +30,7 @@
             "description": "Usuário registrado com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Register" }
+                "schema": { "$ref": "#/components/schemas/User" }
               }
             }
           },
@@ -35,7 +41,7 @@
     "/auth": {
       "post": {
         "summary": "Autenticar usuário",
-        "tags": ["Authenticate"],
+        "tags": ["Users"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -48,7 +54,82 @@
             "description": "Usuário autenticado com sucesso.",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Authenticate" }
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Buscar usuários",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/User" }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "summary": "Buscar usuário por id",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Id do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/user/delete/{id}": {
+      "delete": {
+        "summary": "Deletar usuário",
+        "tags": ["Users"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Delete" }
               }
             }
           },
@@ -75,6 +156,23 @@
         "properties": {
           "email": { "type": "string", "example": "johndoe@example.com" },
           "password": { "type": "string", "example": "John@123" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "d3f1b1a0-1234-4a1b-9c3d-abcdef123456" },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "johndoe@example.com" },
+          "phone": { "type": "string", "example": "99 99999-9999" },
+          "profile": { "type": "string", "example": "ESTUDENT" },
+          "situation": { "type": "string", "example": "ACTIVE" }
+        }
+      },
+      "Delete": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Usuário deletado com sucesso" }
         }
       }
     },
