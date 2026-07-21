@@ -5,7 +5,7 @@ export const registerUserBodySchema = z.object({
   name: z.string().trim().min(1, { message: 'Nome é obrigatório.' }),
   email: z.string(),
   phone: z.string(),
-  profile: z.enum(['STUDENT', 'TEACHER', 'LIBRARIAN', 'VISITOR']),
+  profile: z.enum(['ADMIN', 'LIBRARIAN', 'VISITOR']),
   situation: z.enum(['ACTIVE', 'INACTIVE']),
   password: z.string().refine(isvalidPassword, {
     message:

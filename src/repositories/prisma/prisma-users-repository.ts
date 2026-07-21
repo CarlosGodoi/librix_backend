@@ -106,6 +106,7 @@ export class PrismaUsersRepository implements UsersRepository {
         phone: data.phone,
         profile: data.profile,
         situation: data.situation,
+        updatedAt: new Date(),
       },
     });
 

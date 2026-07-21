@@ -18,6 +18,7 @@ export class InMemoryUsersRepository implements UsersRepository {
       profile: data.profile,
       situation: data.situation ?? Status.ACTIVE,
       createdAt: new Date(),
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : null,
     };
 
     this.items.push(user);

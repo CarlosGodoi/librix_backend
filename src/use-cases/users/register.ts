@@ -28,28 +28,23 @@ export class RegisterUserUserCase {
     profile,
     situation,
   }: IRegisterUseCaseRequest): Promise<IRegisterUseCaseResponse> {
-    try {
-      const password_hash = await hash(password, 8);
+    const password_hash = await hash(password, 8);
 
-      const emailExists = await this.usersRepository.findByEmail(email);
+    const emailExists = await this.usersRepository.findByEmail(email);
 
-      if (emailExists) {
-        throw new AppError('email', `Este e-mail já esta em uso.`);
-      }
-
-      const user = await this.usersRepository.create({
-        name,
-        email,
-        phone,
-        password: password_hash,
-        profile,
-        situation,
-      });
-
-      return { user };
-    } catch (error) {
-      console.error('Erro no RegisterUseCase', error);
-      throw error;
+    if (emailExists) {
+      throw new AppError('email', `Este e-mail já esta em uso.`);
     }
+
+    const user = await this.usersRepository.create({
+      name,
+      email,
+      phone,
+      password: password_hash,
+      profile,
+      situation,
+    });
+
+    return { user };
   }
 }

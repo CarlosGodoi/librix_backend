@@ -4,6 +4,7 @@ import { authRouter } from './user/authRoute';
 import { getAllUsersRouter } from './user/getAllUsersRoute';
 import { getUserByIdRouter } from './user/getUserByIdRoute';
 import { deleteUserRouter } from './user/deleteUserRoute';
+import { updateUserRouter } from './user/updateUserRoute';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use('/auth', authRouter);
 router.use('/users', getAllUsersRouter);
 router.use('/user', getUserByIdRouter);
 router.use('/user', deleteUserRouter);
+router.use('/user', updateUserRouter);
 
 export { router };

@@ -7,4 +7,5 @@ export interface IUpdatedUserDTO {
   phone: string;
   profile: Profile;
   situation: Status;
+  updatedAt: Date;
 }
