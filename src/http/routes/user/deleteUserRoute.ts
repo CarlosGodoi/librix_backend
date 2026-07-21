@@ -5,7 +5,7 @@ import { Router, type NextFunction, type Request, type Response } from 'express'
 const deleteUserRouter = Router();
 
 deleteUserRouter.delete(
-  '/:id',
+  '/delete/:id',
   autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await deleteUser(req, res, next);
