@@ -14,7 +14,7 @@ export interface IBooksParamsGetAll extends IPagination {
   totalPage?: number;
 }
 
-export class PrismaBookRepository implements BooksRepository {
+export class PrismaBooksRepository implements BooksRepository {
   async create(data: BookCreateInput) {
     const book = await prisma.book.create({
       data,
@@ -69,6 +69,16 @@ export class PrismaBookRepository implements BooksRepository {
     const book = await prisma.book.findFirst({
       where: {
         id,
+      },
+    });
+
+    return book;
+  }
+
+  async findByIsbn(isbn: string) {
+    const book = await prisma.book.findUnique({
+      where: {
+        isbn,
       },
     });
 
