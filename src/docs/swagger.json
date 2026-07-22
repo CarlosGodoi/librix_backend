@@ -11,6 +11,10 @@
     {
       "name": "Users",
       "description": "Gestão de usuários (registro, autenticação, consulta e remoção)"
+    },
+    {
+      "name": "Books",
+      "description": "Gestão de livros (registro, atualização, consulta e remoção)"
     }
   ],
   "paths": {
@@ -136,6 +140,31 @@
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
+    },
+    "/book/register": {
+      "post": {
+        "summary": "Registrar novo livro",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BookRegister" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário registrado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BookRegister" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
     }
   },
   "components": {
@@ -174,6 +203,20 @@
         "properties": {
           "message": { "type": "string", "example": "Usuário deletado com sucesso" }
         }
+      }
+    },
+    "BookRegister": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "example": "Livro 1" },
+        "author": "Author",
+        "isbn": "ISBN 999-99-999-00-5",
+        "publisher": "Editora example",
+        "category": "Ficção",
+        "year": "22/07/2026",
+        "copies": 1,
+        "synopsis": "Um livro de ficção",
+        "coverUrl": "Imagem do livro"
       }
     },
     "responses": {
