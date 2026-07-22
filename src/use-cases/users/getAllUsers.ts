@@ -1,7 +1,5 @@
-import type {
-  GetAllParams,
-  IUsersParamsGetAll,
-} from '@/repositories/prisma/prisma-users-repository';
+import type { IUsersParamsGetAll } from '@/repositories/prisma/prisma-users-repository';
+import type { GetAllParams } from '@/repositories/prisma/types/getAllParams';
 import type { UsersRepository } from '@/repositories/users-repository';
 
 export class GetAllUsersUseCase {

@@ -4,23 +4,8 @@ import { prisma } from '../../lib/prisma';
 import type { IUpdatedUserDTO } from '../dto/user-dto';
 import type { IPagination } from '../interface/pagination';
 import type { UsersRepository } from '../users-repository';
-
-const Pagination = (skip: number, take: number) => {
-  const calcSkip = (skip - 1) * take;
-
-  const pagination = {
-    skip: calcSkip < 0 ? 0 : calcSkip,
-    take,
-  };
-
-  return pagination;
-};
-
-export interface GetAllParams {
-  skip?: number;
-  take?: number;
-  search?: string;
-}
+import type { GetAllParams } from './types/getAllParams';
+import { Pagination } from '@/utils/paginationCalc';
 
 export interface IUsersParamsGetAll extends IPagination {
   users: User[];
