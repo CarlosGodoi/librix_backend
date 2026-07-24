@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma';
 import type { BooksRepository } from '@/repositories/books-repository';
 import { AppError } from '@/utils/errors/appError';
 import type { Book } from 'generated/prisma/client';
