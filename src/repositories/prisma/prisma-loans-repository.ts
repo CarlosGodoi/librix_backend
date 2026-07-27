@@ -146,6 +146,17 @@ export class PrismaLoansRepository implements LoansRepository {
     return delayedBook;
   }
 
+  async findDelayedByUserId(userId: string) {
+    const delayedLoans = await prisma.loan.findMany({
+      where: {
+        userId,
+        status: 'DELAYED',
+      },
+    });
+
+    return delayedLoans;
+  }
+
   async markOverdueAsDelayed() {
     const result = await prisma.loan.updateMany({
       where: {

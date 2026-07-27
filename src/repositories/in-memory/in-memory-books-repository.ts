@@ -83,6 +83,12 @@ export class InMemoryBooksRepository implements BooksRepository {
   }
 
   async delete(id: string) {
-    this.items.findIndex((item) => item.id === id);
+    const existingIndex = this.items.findIndex((item) => item.id === id);
+
+    if (existingIndex === -1) {
+      throw new AppError('error', 'Book not found.');
+    }
+
+    this.items.splice(existingIndex, 1);
   }
 }

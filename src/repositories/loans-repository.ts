@@ -22,6 +22,8 @@ export interface LoansRepository {
 
   findDelayed(): Promise<Loan[]>;
 
+  findDelayedByUserId(userId: string): Promise<Loan[]>;
+
   markOverdueAsDelayed(): Promise<{ count: number }>;
 
   update(data: IUpdateLoanDTO): Promise<Loan>;
