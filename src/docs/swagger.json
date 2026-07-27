@@ -15,6 +15,10 @@
     {
       "name": "Books",
       "description": "Gestão de livros (registro, atualização, consulta e remoção)"
+    },
+    {
+      "name": "Loans",
+      "description": "Gestão de empréstimos de livros"
     }
   ],
   "paths": {
@@ -165,6 +169,31 @@
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
+    },
+    "/loan/register": {
+      "post": {
+        "summary": "Registrar um empréstimo de livro",
+        "tags": ["Loans"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoanRegister" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário registrado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LoanRegister" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
     }
   },
   "components": {
@@ -203,20 +232,32 @@
         "properties": {
           "message": { "type": "string", "example": "Usuário deletado com sucesso" }
         }
-      }
-    },
-    "BookRegister": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string", "example": "Livro 1" },
-        "author": "Author",
-        "isbn": "ISBN 999-99-999-00-5",
-        "publisher": "Editora example",
-        "category": "Ficção",
-        "year": "22/07/2026",
-        "copies": 1,
-        "synopsis": "Um livro de ficção",
-        "coverUrl": "Imagem do livro"
+      },
+      "BookRegister": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Livro 1" },
+          "author": { "type": "string", "example": "Author" },
+          "isbn": { "type": "string", "example": "ISBN 999-99-999-00-5" },
+          "publisher": { "type": "string", "example": "Editora example" },
+          "category": { "type": "string", "example": "Ficção" },
+          "year": { "type": "string", "example": "22/07/2026" },
+          "copies": { "type": "integer", "example": 1 },
+          "synopsis": { "type": "string", "example": "Um livro de ficção" },
+          "coverUrl": { "type": "string", "example": "Imagem do livro" }
+        }
+      },
+      "LoanRegister": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "Empréstimo 1" },
+          "userId": { "type": "string", "example": "90njknjkd8-98930390hjdbdb09ko=ejond" },
+          "bookId": { "type": "string", "example": "90njknjkd8-98930390hjdbdb09ko=ejond" },
+          "loanDate": { "type": "string", "example": "dd/mm/aaaa" },
+          "dueDate": { "type": "string", "example": "dd/mm/aaaa" },
+          "returnDate": { "type": "string", "example": "dd/mm/aaaa" },
+          "status": { "type": "string", "example": "INPROGRESS" }
+        }
       }
     },
     "responses": {
