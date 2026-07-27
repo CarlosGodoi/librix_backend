@@ -47,10 +47,7 @@ export class PrismaBooksRepository implements BooksRepository {
 
     const book = await prisma.book.findMany({
       where,
-      orderBy: {
-        title: 'asc',
-        author: 'asc',
-      },
+      orderBy: [{ title: 'asc' }, { author: 'asc' }],
       skip: pagination.skip,
       take: pagination.take,
     });

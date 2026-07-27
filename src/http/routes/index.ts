@@ -7,6 +7,7 @@ import { deleteUserRouter } from './user/deleteUserRoute';
 import { updateUserRouter } from './user/updateUserRoute';
 import { registerBookRouter } from './books/registerBookRoute';
 import { registerLoanRouter } from './loans/registerLoanRoute';
+import { getAllBooksRouter } from './books/getAllBooksRoute';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use('/user', updateUserRouter);
 
 // Books Routes
 router.use('/book', registerBookRouter);
+router.use('/books', getAllBooksRouter);
 
 // Loans Routes
 router.use('/loan', registerLoanRouter);

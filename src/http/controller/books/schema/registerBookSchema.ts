@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BookCategory } from '../book-category';
+import { BookCategory } from '../type/book-category';
 
 const brDateToISO = (val: string) => {
   const [day, month, year] = val.split('/');
