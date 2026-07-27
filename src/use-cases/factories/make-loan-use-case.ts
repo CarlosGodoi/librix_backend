@@ -3,7 +3,7 @@ import { PrismaLoansRepository } from '@/repositories/prisma/prisma-loans-reposi
 import { PrismaUsersRepository } from '@/repositories/prisma/prisma-users-repository';
 import { RegisterLoanUseCase } from '../loans/registerLoan';
 
-export function makeLoanUseCase() {
+export function makeRegisterLoanUseCase() {
   const usersRepository = new PrismaUsersRepository();
   const booksRepository = new PrismaBooksRepository();
   const loansRepository = new PrismaLoansRepository();
