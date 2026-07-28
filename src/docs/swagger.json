@@ -170,6 +170,27 @@
         }
       }
     },
+    "/books": {
+      "get": {
+        "summary": "Buscar livros",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de livros",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Book" }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/loan/register": {
       "post": {
         "summary": "Registrar um empréstimo de livro",
@@ -243,6 +264,21 @@
           "category": { "type": "string", "example": "Ficção" },
           "year": { "type": "string", "example": "22/07/2026" },
           "copies": { "type": "integer", "example": 1 },
+          "synopsis": { "type": "string", "example": "Um livro de ficção" },
+          "coverUrl": { "type": "string", "example": "Imagem do livro" }
+        }
+      },
+      "Book": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "example": "9df4c581-f647-4d81-8326-29326b3a1e85" },
+          "title": { "type": "string", "example": "Livro 1" },
+          "author": { "type": "string", "example": "Nome Author" },
+          "isbn": { "type": "string", "example": "ISBN 999-99-999-00-9" },
+          "publisher": { "type": "string", "example": "Nome editora" },
+          "category": { "type": "string", "example": "Ficção" },
+          "year": { "type": "string", "example": "2026-07-22T00:00:00.000Z" },
+          "copies": { "type": "integer", "example": 5 },
           "synopsis": { "type": "string", "example": "Um livro de ficção" },
           "coverUrl": { "type": "string", "example": "Imagem do livro" }
         }
