@@ -26,7 +26,7 @@ export class PrismaBooksRepository implements BooksRepository {
   async getAll({ skip, take, search }: GetAllParams): Promise<IBooksParamsGetAll> {
     let pagination: IPagination = {};
 
-    if (skip && take) {
+    if (skip !== undefined && take !== undefined) {
       pagination = Pagination(skip, take);
     }
 
@@ -45,20 +45,22 @@ export class PrismaBooksRepository implements BooksRepository {
       }),
     };
 
-    const book = await prisma.book.findMany({
-      where,
-      orderBy: [{ title: 'asc' }, { author: 'asc' }],
-      skip: pagination.skip,
-      take: pagination.take,
-    });
+    const [book, total] = await Promise.all([
+      prisma.book.findMany({
+        where,
+        orderBy: [{ title: 'asc' }, { author: 'asc' }],
+        skip: pagination.skip,
+        take: pagination.take,
+      }),
+      prisma.book.count({ where }),
+    ]);
 
-    const total = await prisma.book.count({ where });
-    const totalPage = take ? Math.ceil(total / take) : total;
+    const totalPage = take ? Math.ceil(total / take) : 1;
 
     return {
       books: book,
       total,
-      ...(pagination.take && { totalPage }),
+      totalPage,
     };
   }
 

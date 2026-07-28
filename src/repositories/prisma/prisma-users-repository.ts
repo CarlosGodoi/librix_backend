@@ -25,7 +25,7 @@ export class PrismaUsersRepository implements UsersRepository {
   async getAll({ skip, take, search }: GetAllParams): Promise<IUsersParamsGetAll> {
     let pagination: IPagination = {};
 
-    if (skip && take) {
+    if (skip !== undefined && take !== undefined) {
       pagination = Pagination(skip, take);
     }
 
@@ -41,22 +41,22 @@ export class PrismaUsersRepository implements UsersRepository {
       }),
     };
 
-    const user = await prisma.user.findMany({
-      where,
-      orderBy: {
-        name: 'asc',
-      },
-      skip: pagination.skip,
-      take: pagination.take,
-    });
+    const [user, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        orderBy: [{ name: 'asc' }],
+        skip: pagination.skip,
+        take: pagination.take,
+      }),
+      prisma.user.count({ where }),
+    ]);
 
-    const total = await prisma.user.count({ where });
     const totalPage = take ? Math.ceil(total / take) : total;
 
     return {
       users: user,
       total,
-      ...(pagination.take && { totalPage }),
+      totalPage,
     };
   }
 

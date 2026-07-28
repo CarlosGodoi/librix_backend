@@ -3,6 +3,7 @@ import type { UserCreateInput } from '../../../generated/prisma/models';
 import { AppError } from '../../utils/errors/appError';
 import type { IUpdatedUserDTO } from '../dto/user-dto';
 import type { IPagination } from '../interface/pagination';
+import type { GetAllParams } from '../prisma/types/getAllParams';
 import type { UsersRepository } from '../users-repository';
 
 export class InMemoryUsersRepository implements UsersRepository {
@@ -26,17 +27,22 @@ export class InMemoryUsersRepository implements UsersRepository {
     return user;
   }
 
-  async getAll(data: IPagination) {
-    const take = data.take || 10;
-    const skip = data.skip || 0;
+  async getAll({ skip = 0, take = 10, search }: GetAllParams) {
+    let filteredItems = this.items;
+
+    if (search) {
+      filteredItems = filteredItems.filter((item) =>
+        item.name.toLowerCase().startsWith(search.toLowerCase()),
+      );
+    }
 
     const startIndex = skip;
     const endIndex = skip + take;
 
-    const total = this.items.length;
+    const total = filteredItems.length;
     const totalPage = Math.ceil(total / take);
 
-    const users = this.items.slice(startIndex, endIndex);
+    const users = filteredItems.slice(startIndex, endIndex);
 
     return { total, users, totalPage };
   }

@@ -2,8 +2,8 @@ import type { Book } from 'generated/prisma/client';
 import type { BooksRepository } from '../books-repository';
 import type { BookCreateInput } from 'generated/prisma/models';
 import type { IUpdateBookDTO } from '../dto/book-dto';
-import type { IPagination } from '../interface/pagination';
 import { AppError } from '@/utils/errors/appError';
+import type { GetAllParams } from '../prisma/types/getAllParams';
 
 export class InMemoryBooksRepository implements BooksRepository {
   public items: Book[] = [];
@@ -27,17 +27,23 @@ export class InMemoryBooksRepository implements BooksRepository {
     return book;
   }
 
-  async getAll(data: IPagination) {
-    const take = data.take || 10;
-    const skip = data.skip || 0;
+  async getAll({ skip = 0, take = 10, search }: GetAllParams) {
+    let filteredItems = this.items;
 
+    if (search) {
+      filteredItems = this.items.filter(
+        (item) =>
+          item.title.toLowerCase().startsWith(search.toLowerCase()) ||
+          item.author.toLowerCase().startsWith(search.toLowerCase()),
+      );
+    }
     const startIndex = skip;
     const endIndex = skip + take;
 
-    const total = this.items.length;
+    const total = filteredItems.length;
     const totalPage = Math.ceil(total / take);
 
-    const books = this.items.slice(startIndex, endIndex);
+    const books = filteredItems.slice(startIndex, endIndex);
 
     return { total, books, totalPage };
   }
