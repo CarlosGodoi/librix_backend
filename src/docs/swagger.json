@@ -191,6 +191,93 @@
         }
       }
     },
+    "/book/{id}/upload": {
+      "post": {
+        "summary": "Upload de imagem do livro",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do livro",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo de imagem do livro (jpg, png, etc)"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UploadImageBook" }
+              }
+            }
+          },
+          "400": {
+            "description": "Arquivo não enviado ou formato inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Arquivo inválido ou não enviado" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Livro não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Livro não encontrado" }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Arquivo muito grande",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Arquivo excede o tamanho máximo permitido"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/loan/register": {
       "post": {
         "summary": "Registrar um empréstimo de livro",
@@ -265,7 +352,10 @@
           "year": { "type": "string", "example": "22/07/2026" },
           "copies": { "type": "integer", "example": 1 },
           "synopsis": { "type": "string", "example": "Um livro de ficção" },
-          "coverUrl": { "type": "string", "example": "Imagem do livro" }
+          "coverUrl": {
+            "type": "string",
+            "example": "http://localhost:3334/uploads/livro1-capa.jpg"
+          }
         }
       },
       "Book": {
@@ -280,7 +370,19 @@
           "year": { "type": "string", "example": "2026-07-22T00:00:00.000Z" },
           "copies": { "type": "integer", "example": 5 },
           "synopsis": { "type": "string", "example": "Um livro de ficção" },
-          "coverUrl": { "type": "string", "example": "Imagem do livro" }
+          "coverUrl": {
+            "type": "string",
+            "example": "http://localhost:3334/uploads/livro1-capa.jpg"
+          }
+        }
+      },
+      "UploadImageBook": {
+        "type": "object",
+        "properties": {
+          "coverUrl": {
+            "type": "string",
+            "example": "http://localhost:3334/uploads/livro1-capa.jpg"
+          }
         }
       },
       "LoanRegister": {
