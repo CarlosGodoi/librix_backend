@@ -191,6 +191,33 @@
         }
       }
     },
+    "/book/{id}": {
+      "get": {
+        "summary": "Buscar livro por id",
+        "tags": ["Books"],
+        "security": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Id do livro",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "livro encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/book/{id}/upload": {
       "post": {
         "summary": "Upload de imagem do livro",
