@@ -1,7 +1,7 @@
 import type { Book } from 'generated/prisma/client';
 import type { BooksRepository } from '../books-repository';
 import type { BookCreateInput } from 'generated/prisma/models';
-import type { IUpdateBookDTO } from '../dto/book-dto';
+import type { IUpdateBookDTO, IUploadImageBookDTO } from '../dto/book-dto';
 import { AppError } from '@/utils/errors/appError';
 import type { GetAllParams } from '../prisma/types/getAllParams';
 
@@ -84,6 +84,24 @@ export class InMemoryBooksRepository implements BooksRepository {
     };
 
     this.items[existingIndex] = updatedBook;
+
+    return updatedBook;
+  }
+
+  async upload(path: IUploadImageBookDTO) {
+    const existsIndex = await this.items.findIndex((item) => item.id === path.id);
+
+    if (existsIndex === -1) {
+      throw new AppError('error', `Book with ID "${path.id}" not found.`);
+    }
+
+    const book = this.items[existsIndex];
+    const updatedBook: Book = {
+      ...book,
+      coverUrl: typeof path.image === 'string' ? path.image : (path.image?.path ?? ''),
+    };
+
+    this.items[existsIndex] = updatedBook;
 
     return updatedBook;
   }

@@ -1,6 +1,6 @@
 import type { Book, Prisma } from 'generated/prisma/client';
 import type { IPagination } from './interface/pagination';
-import type { IUpdateBookDTO } from './dto/book-dto';
+import type { IUpdateBookDTO, IUploadImageBookDTO } from './dto/book-dto';
 
 export interface BooksRepository {
   create(data: Prisma.BookCreateInput): Promise<Book>;
@@ -8,5 +8,6 @@ export interface BooksRepository {
   findById(id: string): Promise<Book | null>;
   findByIsbn(isbn: string): Promise<Book | null>;
   update(data: IUpdateBookDTO): Promise<Book>;
+  upload(path: IUploadImageBookDTO): Promise<Book | null>;
   delete(id: string): Promise<void>;
 }

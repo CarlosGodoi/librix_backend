@@ -1,7 +1,7 @@
-import type { Book, Prisma } from 'generated/prisma/client';
+import { Prisma, type Book } from 'generated/prisma/client';
 import type { BookCreateInput } from 'generated/prisma/models';
 import type { BooksRepository } from '../books-repository';
-import type { IUpdateBookDTO } from '../dto/book-dto';
+import type { IUpdateBookDTO, IUploadImageBookDTO } from '../dto/book-dto';
 import type { IPagination } from '../interface/pagination';
 import { prisma } from '@/lib/prisma';
 import type { GetAllParams } from './types/getAllParams';
@@ -96,6 +96,21 @@ export class PrismaBooksRepository implements BooksRepository {
     });
 
     return book;
+  }
+
+  async upload({ id, image }: IUploadImageBookDTO) {
+    try {
+      const book = await prisma.book.update({
+        where: { id },
+        data: { coverUrl: image.path },
+      });
+      return book;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return null;
+      }
+      throw error;
+    }
   }
 
   async delete(id: string) {

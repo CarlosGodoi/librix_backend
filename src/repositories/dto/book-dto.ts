@@ -3,3 +3,8 @@ export interface IUpdateBookDTO {
   copies: number;
   synopsis?: string;
 }
+
+export interface IUploadImageBookDTO {
+  image: { path: string };
+  id: string;
+}

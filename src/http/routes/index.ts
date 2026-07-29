@@ -8,6 +8,7 @@ import { updateUserRouter } from './user/updateUserRoute';
 import { registerBookRouter } from './books/registerBookRoute';
 import { registerLoanRouter } from './loans/registerLoanRoute';
 import { getAllBooksRouter } from './books/getAllBooksRoute';
+import { uploadImageBookRouter } from './books/uploadImageRoute';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/user', updateUserRouter);
 
 // Books Routes
 router.use('/book', registerBookRouter);
+router.use('/book', uploadImageBookRouter);
 router.use('/books', getAllBooksRouter);
 
 // Loans Routes
