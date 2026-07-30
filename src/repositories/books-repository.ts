@@ -6,8 +6,12 @@ export interface BooksRepository {
   create(data: Prisma.BookCreateInput): Promise<Book>;
   getAll(data: IPagination): Promise<{ total: number; books: Book[]; totalPage?: number }>;
   findById(id: string): Promise<Book | null>;
+  findManyByIds(ids: string[]): Promise<Book[]>;
+  findManyWithEmbedding(): Promise<Book[]>;
   findByIsbn(isbn: string): Promise<Book | null>;
   update(data: IUpdateBookDTO): Promise<Book>;
   upload(path: IUploadImageBookDTO): Promise<Book | null>;
+  findManyWithoutEmbedding(): Promise<Book[]>;
+  updateEmbedding(bookId: string, embedding: number[]): Promise<void>;
   delete(id: string): Promise<void>;
 }

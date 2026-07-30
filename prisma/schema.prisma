@@ -46,6 +46,9 @@ model Book {
   synopsis  String?
   coverUrl  String?
 
+  embedding         Json?
+  embeddingUpdateAt DateTime? @map("embedding_update_at")
+
   loans Loan[]
 
   @@map("books")

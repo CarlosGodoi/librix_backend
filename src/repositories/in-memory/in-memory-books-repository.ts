@@ -18,8 +18,10 @@ export class InMemoryBooksRepository implements BooksRepository {
       category: data.category,
       year: data.year ? new Date(data.year) : new Date(),
       copies: data.copies,
-      synopsis: data.synopsis || '',
-      coverUrl: data.coverUrl || '',
+      synopsis: data.synopsis ?? null,
+      coverUrl: data.coverUrl ?? null,
+      embedding: (data.embedding ?? null) as unknown as Book['embedding'],
+      embeddingUpdateAt: null,
     };
 
     this.items.push(book);
@@ -56,6 +58,14 @@ export class InMemoryBooksRepository implements BooksRepository {
     }
 
     return book || null;
+  }
+
+  async findManyByIds(ids: string[]): Promise<Book[]> {
+    return this.items.filter((book) => ids.includes(book.id));
+  }
+
+  async findManyWithEmbedding(): Promise<Book[]> {
+    return this.items.filter((book) => book.embedding !== null);
   }
 
   async findByIsbn(isbn: string) {
@@ -104,6 +114,19 @@ export class InMemoryBooksRepository implements BooksRepository {
     this.items[existsIndex] = updatedBook;
 
     return updatedBook;
+  }
+
+  async findManyWithoutEmbedding() {
+    return this.items.filter((book) => book.embedding === null);
+  }
+
+  async updateEmbedding(bookId: string, embedding: number[]) {
+    const book = this.items.find((book) => book.id === bookId);
+
+    if (book) {
+      book.embedding = embedding as unknown as Book['embedding'];
+      book.embeddingUpdateAt = new Date();
+    }
   }
 
   async delete(id: string) {

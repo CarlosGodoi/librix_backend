@@ -74,6 +74,18 @@ export class PrismaBooksRepository implements BooksRepository {
     return book;
   }
 
+  async findManyByIds(ids: string[]): Promise<Book[]> {
+    return prisma.book.findMany({
+      where: { id: { in: ids } },
+    });
+  }
+
+  async findManyWithEmbedding(): Promise<Book[]> {
+    return prisma.book.findMany({
+      where: { embedding: { not: Prisma.DbNull } },
+    });
+  }
+
   async findByIsbn(isbn: string) {
     const book = await prisma.book.findUnique({
       where: {
@@ -111,6 +123,26 @@ export class PrismaBooksRepository implements BooksRepository {
       }
       throw error;
     }
+  }
+
+  async findManyWithoutEmbedding() {
+    return prisma.book.findMany({
+      where: {
+        embedding: { equals: Prisma.DbNull },
+      },
+    });
+  }
+
+  async updateEmbedding(bookId: string, embedding: number[]) {
+    await prisma.book.update({
+      where: {
+        id: bookId,
+      },
+      data: {
+        embedding,
+        embeddingUpdateAt: new Date(),
+      },
+    });
   }
 
   async delete(id: string) {
