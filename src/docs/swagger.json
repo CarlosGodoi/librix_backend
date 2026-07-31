@@ -218,6 +218,34 @@
         }
       }
     },
+    "/books/recommendations/{userId}": {
+      "get": {
+        "summary": "Buscar recomendações de livros para um usuário",
+        "description": "Analisa o histórico de empréstimos recentes do usuário e retorna livros com temas/gêneros similares, usando embeddings semânticos e um modelo de linguagem para gerar a explicação.",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recomendações geradas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/BookRecommendations" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/book/{id}/upload": {
       "post": {
         "summary": "Upload de imagem do livro",
@@ -400,6 +428,24 @@
           "coverUrl": {
             "type": "string",
             "example": "http://localhost:3334/uploads/livro1-capa.jpg"
+          }
+        }
+      },
+      "BookRecommendations": {
+        "type": "object",
+        "properties": {
+          "baseadoEm": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["A Garota no Trem"]
+          },
+          "sugestoes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Book" }
+          },
+          "explicacao": {
+            "type": "string",
+            "example": "Como você leu A Garota no Trem, que é rico em suspense psicológico, estas obras compartilham elementos de tensão narrativa e desenvolvimento de personagem."
           }
         }
       },
