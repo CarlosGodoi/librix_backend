@@ -31,7 +31,7 @@ export class GetBookRecommendationsUseCase {
     userId,
   }: GetBookRecommendationsUseCaseRequest): Promise<GetBookRecommendationsUseCaseResponse> {
     const { loans: recentLoans } = await this.loansRepository.findByUserId(userId, {
-      skip: 1,
+      skip: 0,
       take: 5,
     });
 
@@ -60,10 +60,10 @@ export class GetBookRecommendationsUseCase {
 
     const topCandidates = scored
       .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
+      .slice(0, 3)
       .map((s) => s.book);
 
-    const explicacao = await this.llmService.generateSuggestionText(loanedBooks, topCandidates);
+    const explicacao = await this.llmService.generateSuggestionsText(loanedBooks, topCandidates);
 
     return {
       baseadoEm: loanedBooks.map((b) => b.title),

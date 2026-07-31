@@ -4,13 +4,14 @@ import type { BookCreateInput } from 'generated/prisma/models';
 import type { IUpdateBookDTO, IUploadImageBookDTO } from '../dto/book-dto';
 import { AppError } from '@/utils/errors/appError';
 import type { GetAllParams } from '../prisma/types/getAllParams';
+import { randomUUID } from 'node:crypto';
 
 export class InMemoryBooksRepository implements BooksRepository {
   public items: Book[] = [];
 
   async create(data: BookCreateInput) {
     const book = {
-      id: data.id || 'book-1',
+      id: data.id || randomUUID(),
       title: data.title,
       author: data.author,
       isbn: data.isbn,

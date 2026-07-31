@@ -4,6 +4,7 @@ import type { IUpdateLoanDTO } from '../dto/loan-dto';
 import type { IPagination } from '../interface/pagination';
 import type { LoansRepository } from '../loans-repository';
 import { AppError } from '@/utils/errors/appError';
+import { randomUUID } from 'node:crypto';
 
 function extractUserId(data: LoanCreateInput): string {
   if ('userId' in data && typeof data.userId === 'string') {
@@ -42,7 +43,7 @@ export class InMemoryLoansRepository implements LoansRepository {
 
   async create(data: LoanCreateInput) {
     const loan = {
-      id: 'loan-id',
+      id: randomUUID(),
       userId: extractUserId(data),
       bookId: extractBookId(data),
       loanDate: extractDate(data.loanDate, 'loanDate'),

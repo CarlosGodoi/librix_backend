@@ -3,7 +3,7 @@ import type { Book } from 'generated/prisma/client';
 import type { LLMService } from './llm-service';
 
 export class OpenRouterLLMService implements LLMService {
-  async generateSuggestionText(loanedBooks: Book[], candidateBooks: Book[]): Promise<string> {
+  async generateSuggestionsText(loanedBooks: Book[], candidateBooks: Book[]): Promise<string> {
     const apiKey = process.env.OPENROUTER_API_KEY;
 
     const prompt = `
