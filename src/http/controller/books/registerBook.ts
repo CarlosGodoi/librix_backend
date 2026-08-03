@@ -3,7 +3,7 @@ import { registerBookBodySchema } from './schema/registerBookSchema';
 import { makeRegisterBookUseCase } from '@/use-cases/factories/make-register-book-use-case';
 import { AppError } from '@/utils/errors/appError';
 
-export async function registerBook(req: Request, res: Response, next: NextFunction) {
+export async function registerBookController(req: Request, res: Response, next: NextFunction) {
   const { title, author, isbn, publisher, category, year, copies, synopsis, coverUrl } =
     registerBookBodySchema.parse(req.body);
 

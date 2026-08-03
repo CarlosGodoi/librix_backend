@@ -3,7 +3,7 @@ import cloudinary from 'cloudinary';
 import { Readable } from 'stream';
 import { makeUploadImageBookUseCase } from '@/use-cases/factories/make-upload-book-image-use-case';
 
-export async function uploadImageBook(req: Request, res: Response, next: NextFunction) {
+export async function uploadImageBookController(req: Request, res: Response, next: NextFunction) {
   const { id } = req.params as { id: string };
   const file = req.file as Express.Multer.File;
 

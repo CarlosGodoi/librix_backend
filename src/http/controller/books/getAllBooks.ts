@@ -7,7 +7,7 @@ interface IUserQueryParams {
   search?: string;
 }
 
-export async function getAllBooks(req: Request, res: Response, Nex: NextFunction) {
+export async function getAllBooksController(req: Request, res: Response, next: NextFunction) {
   const { skip, take, search } = req.query as IUserQueryParams;
 
   const getAllBooksUsecase = makeGetAllBooksUseCase();

@@ -1,7 +1,7 @@
 import { makeGetBookByIdUseCase } from '@/use-cases/factories/make-get-book-by-id-use-case';
 import type { Request, Response, NextFunction } from 'express';
 
-export async function getBookById(req: Request, res: Response, nex: NextFunction) {
+export async function getBookByIdController(req: Request, res: Response, next: NextFunction) {
   try {
     const getBookByIdUseCase = makeGetBookByIdUseCase();
 
