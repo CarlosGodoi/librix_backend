@@ -48,8 +48,6 @@ describe('Register Loan Use Case', () => {
       userId: user.id,
       dueDate: new Date('03/08/2026'),
       loanDate: new Date('27/07/2026'),
-      returnDate: new Date('03/08/2026'),
-      status: 'INPROGRESS',
     });
     expect(loan.id).toEqual(expect.any(String));
   });

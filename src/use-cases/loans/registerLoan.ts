@@ -10,8 +10,6 @@ interface IRegisterLoanRequest {
   bookId: string;
   loanDate: Date;
   dueDate: Date;
-  returnDate?: Date;
-  status: LoanStatus;
 }
 
 interface IRegisterLoanResponse {
@@ -32,8 +30,6 @@ export class RegisterLoanUseCase {
     bookId,
     loanDate,
     dueDate,
-    returnDate,
-    status,
   }: IRegisterLoanRequest): Promise<IRegisterLoanResponse> {
     const user = await this.usersRepository.findById(userId);
     const book = await this.booksRepository.findById(bookId);
@@ -79,8 +75,7 @@ export class RegisterLoanUseCase {
       book: { connect: { id: bookId } },
       loanDate,
       dueDate,
-      returnDate,
-      status,
+      status: LoanStatus.INPROGRESS,
     });
 
     return { loan };

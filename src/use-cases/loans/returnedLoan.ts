@@ -1,5 +1,4 @@
 import type { LoansRepository } from '@/repositories/loans-repository';
-import { AppError } from '@/utils/errors/appError';
 import { LoanStatus } from 'generated/prisma/enums';
 
 interface IReturnedLoansRequest {
