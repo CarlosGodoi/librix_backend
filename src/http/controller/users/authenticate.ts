@@ -3,7 +3,7 @@ import { authBodySchema } from './schemas/authSchema';
 import { TokenService } from '@/services/tokenService';
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case';
 
-export async function authenticate(req: Request, res: Response, next: NextFunction) {
+export async function authenticateController(req: Request, res: Response, next: NextFunction) {
   const { email, password } = authBodySchema.parse(req.body);
 
   try {

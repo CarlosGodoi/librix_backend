@@ -2,7 +2,7 @@ import { makeDeleteUserUseCase } from '@/use-cases/factories/make-delete-user-us
 import { AppError } from '@/utils/errors/appError';
 import type { NextFunction, Request, Response } from 'express';
 
-export async function deleteUser(req: Request, res: Response, next: NextFunction) {
+export async function deleteUserController(req: Request, res: Response, next: NextFunction) {
   try {
     const deleteUserUseCase = makeDeleteUserUseCase();
 

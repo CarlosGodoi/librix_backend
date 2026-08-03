@@ -3,7 +3,7 @@ import { AppError } from '../../../utils/errors/appError';
 import { updateUserBodySchema } from './schemas/updateUserSchema';
 import { makeUpdateUserUseCase } from '@/use-cases/factories/make-update-user-use-case';
 
-export async function updateUser(req: Request, res: Response, next: NextFunction) {
+export async function updateUserController(req: Request, res: Response, next: NextFunction) {
   const { name, email, phone, profile, situation, updatedAt } = updateUserBodySchema.parse(
     req.body,
   );

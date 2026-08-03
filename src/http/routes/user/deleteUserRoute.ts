@@ -1,4 +1,4 @@
-import { deleteUser } from '@/http/controller/users/deleteUser';
+import { deleteUserController } from '@/http/controller/users/deleteUser';
 import { autorize } from '@/http/middlewares/autorize';
 import { Router, type NextFunction, type Request, type Response } from 'express';
 
@@ -8,7 +8,7 @@ deleteUserRouter.delete(
   '/delete/:id',
   autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
-    await deleteUser(req, res, next);
+    await deleteUserController(req, res, next);
   },
 );
 

@@ -7,7 +7,7 @@ interface IUserQueryParams {
   search?: string;
 }
 
-export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
+export async function getAllUsersController(req: Request, res: Response, next: NextFunction) {
   const { take, skip, search } = req.query as IUserQueryParams;
 
   const getAllUsersUseCase = makeGetAllUsersUseCase();

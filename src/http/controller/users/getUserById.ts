@@ -1,7 +1,7 @@
 import { makeGetUserByIdUseCase } from '@/use-cases/factories/make-get-user-by-id-use-case';
 import type { Request, Response, NextFunction } from 'express';
 
-export async function getUserById(req: Request, res: Response, nex: NextFunction) {
+export async function getUserByIdController(req: Request, res: Response, nex: NextFunction) {
   try {
     const getUserByIdUseCase = makeGetUserByIdUseCase();
 

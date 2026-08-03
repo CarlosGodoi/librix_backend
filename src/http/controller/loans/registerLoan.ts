@@ -3,7 +3,7 @@ import { registerLoanBodySchema } from './schema/registerLoanSchema';
 import { makeRegisterLoanUseCase } from '@/use-cases/factories/make-loan-use-case';
 import { AppError } from '@/utils/errors/appError';
 
-export async function registerLoan(req: Request, res: Response, next: NextFunction) {
+export async function registerLoanController(req: Request, res: Response, next: NextFunction) {
   const { bookId, userId, dueDate, loanDate, returnDate, status } = registerLoanBodySchema.parse(
     req.body,
   );
@@ -14,8 +14,8 @@ export async function registerLoan(req: Request, res: Response, next: NextFuncti
     const loan = await registerLoanUseCase.execute({
       bookId,
       userId,
-      dueDate,
-      loanDate,
+      dueDate: dueDate as Date,
+      loanDate: loanDate as Date,
       returnDate,
       status,
     });

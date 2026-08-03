@@ -11,6 +11,7 @@ import { getAllBooksRouter } from './books/getAllBooksRoute';
 import { uploadImageBookRouter } from './books/uploadImageRoute';
 import { getBookByIdRouter } from './books/getBookByIdRoute';
 import { getBooksRecommendationsRouter } from './books/getBookRecommendationsRoute';
+import { returnedLoanRouter } from './loans/returnedLoanRoute';
 
 const router = Router();
 
@@ -31,4 +32,5 @@ router.use('/book', getBookByIdRouter);
 
 // Loans Routes
 router.use('/loan', registerLoanRouter);
+router.use('/loan', returnedLoanRouter);
 export { router };

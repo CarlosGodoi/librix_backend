@@ -3,7 +3,7 @@ import { registerUserBodySchema } from './schemas/userSchema';
 import { makeRegisterUserUseCase } from '../../../use-cases/factories/make-register-user-use-case';
 import { AppError } from '../../../utils/errors/appError';
 
-export async function registerUser(req: Request, res: Response, next: NextFunction) {
+export async function registerUserController(req: Request, res: Response, next: NextFunction) {
   const { name, email, phone, profile, situation, password } = registerUserBodySchema.parse(
     req.body,
   );
