@@ -357,6 +357,33 @@
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
+    },
+    "/loan/return/{id}": {
+      "patch": {
+        "summary": "Retorno de empréstimo de livro",
+        "tags": ["Loans"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do empréstimo",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Empréstimo retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ReturnedLoan" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
     }
   },
   "components": {
@@ -468,6 +495,12 @@
           "dueDate": { "type": "string", "example": "dd/mm/aaaa" },
           "returnDate": { "type": "string", "example": "dd/mm/aaaa" },
           "status": { "type": "string", "example": "INPROGRESS" }
+        }
+      },
+      "ReturnedLoan": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Empréstimo retornado com sucesso." }
         }
       }
     },
