@@ -6,7 +6,7 @@ const updateUserRouter = Router();
 
 updateUserRouter.put(
   '/update/:id',
-  autorize('ADMIN', 'LIBRARIAN'),
+  autorize('ADMIN', 'VISITOR'),
   async (req: Request, res: Response, next: NextFunction) => {
     await updateUserController(req, res, next);
   },

@@ -6,7 +6,7 @@ const registerBookRouter = Router();
 
 registerBookRouter.post(
   '/register',
-  autorize('LIBRARIAN'),
+  autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await registerBookController(req, res, next);
   },

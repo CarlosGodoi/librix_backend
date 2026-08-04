@@ -6,7 +6,7 @@ const getAllLoansRouter = Router();
 
 getAllLoansRouter.get(
   '/',
-  autorize('LIBRARIAN'),
+  autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await getAllLoansController(req, res, next);
   },

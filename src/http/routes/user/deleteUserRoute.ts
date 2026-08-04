@@ -6,7 +6,7 @@ const deleteUserRouter = Router();
 
 deleteUserRouter.delete(
   '/delete/:id',
-  autorize('ADMIN', 'LIBRARIAN'),
+  autorize('ADMIN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await deleteUserController(req, res, next);
   },

@@ -6,7 +6,7 @@ const returnedLoanRouter = Router();
 
 returnedLoanRouter.patch(
   '/return/:id',
-  autorize('LIBRARIAN'),
+  autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
     await returnedLoanController(req, res, next);
   },
