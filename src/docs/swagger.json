@@ -70,6 +70,56 @@
         }
       }
     },
+    "/refresh": {
+      "post": {
+        "summary": "Renovar access token usando refresh token",
+        "tags": ["Users"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshToken" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token renovado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AccessToken" }
+              }
+            }
+          },
+          "400": {
+            "description": "Refresh token não informado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Refresh token required." }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "User not found." }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/users": {
       "get": {
         "summary": "Buscar usuários",
@@ -404,6 +454,24 @@
         "properties": {
           "email": { "type": "string", "example": "johndoe@example.com" },
           "password": { "type": "string", "example": "John@123" }
+        }
+      },
+      "RefreshToken": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "AccessToken": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
         }
       },
       "User": {
