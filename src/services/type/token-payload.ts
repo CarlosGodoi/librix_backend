@@ -5,3 +5,7 @@ export interface TokenPayload {
   email: string;
   role: Profile;
 }
+
+export interface RefreshTokenPayload {
+  userId: string;
+}

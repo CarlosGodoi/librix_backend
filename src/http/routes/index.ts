@@ -13,12 +13,14 @@ import { getBookByIdRouter } from './books/getBookByIdRoute';
 import { getBooksRecommendationsRouter } from './books/getBookRecommendationsRoute';
 import { returnedLoanRouter } from './loans/returnedLoanRoute';
 import { getAllLoansRouter } from './loans/getAllLoansRoute';
+import { refreshTokenRouter } from './user/refreshTokenRoute';
 
 const router = Router();
 
 // User Routes
 router.use('/', registerUserRouter);
 router.use('/auth', authRouter);
+router.use('/refresh', refreshTokenRouter);
 router.use('/users', getAllUsersRouter);
 router.use('/user', getUserByIdRouter);
 router.use('/user', deleteUserRouter);

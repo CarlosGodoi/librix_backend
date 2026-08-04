@@ -1,6 +1,6 @@
 import { env } from '@/config';
 import Jwt from 'jsonwebtoken';
-import type { TokenPayload } from './type/token-payload';
+import type { RefreshTokenPayload, TokenPayload } from './type/token-payload';
 
 const { JWT_SECRET, JWT_REFRESH_SECRET = 'refresh-token-secret' } = env;
 
@@ -13,11 +13,11 @@ export class TokenService {
     return Jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
   }
 
-  static generateRefreshToken(payload: object): string {
+  static generateRefreshToken(payload: RefreshTokenPayload): string {
     return Jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '7d' });
   }
 
-  static verifyRefreshToken(token: string): { userId: string } {
-    return Jwt.verify(token, JWT_REFRESH_SECRET) as { userId: string };
+  static verifyRefreshToken(token: string): RefreshTokenPayload {
+    return Jwt.verify(token, JWT_REFRESH_SECRET) as RefreshTokenPayload;
   }
 }
