@@ -1,7 +1,5 @@
-import { prisma } from '@/lib/prisma';
-import { TokenService } from '@/services/tokenService';
+import { makeRefreshTokenUseCase } from '@/use-cases/factories/make-refresh-token-use-case';
 import type { NextFunction, Request, Response } from 'express';
-import { Profile } from 'generated/prisma/enums';
 
 export async function refreshTokenController(req: Request, res: Response, next: NextFunction) {
   const { refreshToken } = req.body as { refreshToken: string };
@@ -11,24 +9,11 @@ export async function refreshTokenController(req: Request, res: Response, next: 
   }
 
   try {
-    const decoded = TokenService.verifyRefreshToken(refreshToken);
+    const refreshTokenUseCase = makeRefreshTokenUseCase();
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      select: { id: true, profile: true },
-    });
+    const { accessToken } = await refreshTokenUseCase.execute(refreshToken);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    const accessToken = TokenService.generateAccessToken({
-      userId: user.id,
-      email: '',
-      role: user.profile as Profile,
-    });
-
-    return res.json({ accessToken });
+    return res.status(200).json({ accessToken });
   } catch (error) {
     console.error('Error Refresh Token: ', error);
     return res.status(401).json({ message: 'Invalid or expired refresh token.' });
