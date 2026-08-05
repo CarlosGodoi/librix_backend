@@ -15,6 +15,7 @@ import { returnedLoanRouter } from './loans/returnedLoanRoute';
 import { getAllLoansRouter } from './loans/getAllLoansRoute';
 import { refreshTokenRouter } from './user/refreshTokenRoute';
 import { updateBookRouter } from './books/updateBookRoute';
+import { getLoansByUserIdRouter } from './loans/getLoansByUserIdRoute';
 
 const router = Router();
 
@@ -39,4 +40,5 @@ router.use('/book', updateBookRouter);
 router.use('/loan', registerLoanRouter);
 router.use('/loan', returnedLoanRouter);
 router.use('/loans', getAllLoansRouter);
+router.use('/loans', getLoansByUserIdRouter);
 export { router };
