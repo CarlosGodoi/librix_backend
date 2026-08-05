@@ -182,6 +182,13 @@
             "schema": { "type": "string" }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserUpdate" }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Usuário atualizado com sucesso",
@@ -410,6 +417,40 @@
         }
       }
     },
+    "/book/update/{id}": {
+      "put": {
+        "summary": "Atualizar dados do livro",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do livro",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BookUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "livro atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/loan/register": {
       "post": {
         "summary": "Registrar um empréstimo de livro",
@@ -512,6 +553,16 @@
           "situation": { "type": "string", "example": "ACTIVE" }
         }
       },
+      "UserUpdate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "example": "johndoe@example.com" },
+          "phone": { "type": "string", "example": "99 99999-9999" },
+          "profile": { "type": "string", "example": "ESTUDENT" },
+          "situation": { "type": "string", "example": "ACTIVE" }
+        }
+      },
       "Delete": {
         "type": "object",
         "properties": {
@@ -551,6 +602,13 @@
             "type": "string",
             "example": "http://localhost:3334/uploads/livro1-capa.jpg"
           }
+        }
+      },
+      "BookUpdate": {
+        "type": "object",
+        "properties": {
+          "copies": { "type": "integer", "example": 5 },
+          "synopsis": { "type": "string", "example": "Um livro de ficção" }
         }
       },
       "BookRecommendations": {
