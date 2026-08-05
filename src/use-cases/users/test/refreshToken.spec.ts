@@ -2,15 +2,24 @@ import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-user
 import { RefreshTokenUseCase } from '../refreshToken';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/utils/errors/appError';
-import { TokenService } from '@/services/tokenService';
+
+const tokenProvider = {
+  verifyRefreshToken: vi.fn(),
+  generateAccessToken: vi.fn(),
+  generateRefreshToken: vi.fn(),
+};
 
 let usersRepository: InMemoryUsersRepository;
 let sut: RefreshTokenUseCase;
 
 describe('Refresh Token Use Case', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     usersRepository = new InMemoryUsersRepository();
-    sut = new RefreshTokenUseCase(usersRepository);
+    sut = new RefreshTokenUseCase(
+      usersRepository,
+      tokenProvider as unknown as typeof tokenProvider,
+    );
   });
 
   it('Should be able to refresh the access token', async () => {
@@ -24,17 +33,19 @@ describe('Refresh Token Use Case', () => {
       createdAt: new Date(),
     });
 
-    vi.spyOn(TokenService, 'verifyRefreshToken').mockReturnValue({
+    tokenProvider.verifyRefreshToken.mockReturnValue({
       userId: user.id,
     });
 
+    tokenProvider.generateAccessToken.mockReturnValue('fake-access-token');
+
     const { accessToken } = await sut.execute('valid-refresh-token');
 
-    expect(accessToken).toEqual(expect.any(String));
+    expect(accessToken).toBe('fake-access-token');
   });
 
   it('Should not be able to refresh with a non-existent user', async () => {
-    vi.spyOn(TokenService, 'verifyRefreshToken').mockReturnValue({
+    tokenProvider.verifyRefreshToken.mockReturnValue({
       userId: 'non-existent-id',
     });
 
@@ -42,7 +53,7 @@ describe('Refresh Token Use Case', () => {
   });
 
   it('Should not be able to refresh with an invalid or expired token', async () => {
-    vi.spyOn(TokenService, 'verifyRefreshToken').mockImplementation(() => {
+    tokenProvider.verifyRefreshToken.mockImplementation(() => {
       throw new Error('jwt expired');
     });
 

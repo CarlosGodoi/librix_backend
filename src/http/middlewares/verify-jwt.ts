@@ -3,7 +3,7 @@ import { AppError } from '../../utils/errors/appError';
 import { env } from '../../config/index';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../lib/prisma';
-import type { TokenPayload } from '@/services/type/token-payload';
+import type { TokenPayload } from '@/services/token/types';
 
 export async function verifyJwt(req: Request, _: Response, next: NextFunction) {
   const authHeader = req.headers.authorization as string;

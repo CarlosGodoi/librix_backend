@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { authBodySchema } from './schemas/authSchema';
-import { TokenService } from '@/services/tokenService';
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case';
+import { JwtTokenProvider } from '@/services/token/jwt-token-provider';
 
 export async function authenticateController(req: Request, res: Response, next: NextFunction) {
   const { email, password } = authBodySchema.parse(req.body);
@@ -10,13 +10,15 @@ export async function authenticateController(req: Request, res: Response, next: 
     const authenticateUseCase = makeAuthenticateUseCase();
     const auth = await authenticateUseCase.execute({ email, password });
 
-    const accessToken = TokenService.generateAccessToken({
+    const tokenService = new JwtTokenProvider();
+
+    const accessToken = tokenService.generateAccessToken({
       userId: auth.user.id,
       email: auth.user.email,
       role: auth.user.profile,
     });
 
-    const refreshToken = TokenService.generateRefreshToken({
+    const refreshToken = tokenService.generateRefreshToken({
       userId: auth.user.id,
     });
 

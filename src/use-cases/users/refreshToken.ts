@@ -1,12 +1,15 @@
 import type { UsersRepository } from '@/repositories/users-repository';
-import { TokenService } from '@/services/tokenService';
+import type { TokenProvider } from '@/services/token/token-provider';
 import { AppError } from '@/utils/errors/appError';
 
 export class RefreshTokenUseCase {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private tokenProvider: TokenProvider,
+  ) {}
 
   async execute(refreshToken: string) {
-    const decoded = TokenService.verifyRefreshToken(refreshToken);
+    const decoded = this.tokenProvider.verifyRefreshToken(refreshToken);
 
     const user = await this.usersRepository.findById(decoded.userId);
 
@@ -14,7 +17,7 @@ export class RefreshTokenUseCase {
       throw new AppError('error', 'User not found.');
     }
 
-    const accessToken = TokenService.generateAccessToken({
+    const accessToken = this.tokenProvider.generateAccessToken({
       userId: user.id,
       email: user.email,
       role: user.profile,
