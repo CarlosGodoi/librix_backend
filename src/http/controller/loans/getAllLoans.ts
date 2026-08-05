@@ -1,4 +1,5 @@
 import { makeGetAllLoansUseCase } from '@/use-cases/factories/make-get-all-loans-use-case';
+import { parsePagination } from '@/utils/parsePagination';
 import type { NextFunction, Request, Response } from 'express';
 import { LoanStatus } from 'generated/prisma/enums';
 
@@ -14,12 +15,12 @@ export async function getAllLoansController(req: Request, res: Response, next: N
 
   const getAllLoansUseCase = makeGetAllLoansUseCase();
 
-  const result = await getAllLoansUseCase.execute({
-    skip: skip ? Number(skip) : 1,
-    take: take ? Number(take) : 10,
-    search,
-    status: status ? LoanStatus[status as keyof typeof LoanStatus] : undefined,
-  });
+  const pagination = parsePagination(skip, take);
+
+  if (!pagination) {
+    return res.status(400).json({ error: 'skip and take must be valid numbers.' });
+  }
+  const result = await getAllLoansUseCase.execute(pagination);
 
   return res.status(200).json(result);
 }
