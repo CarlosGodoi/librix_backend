@@ -451,6 +451,33 @@
         }
       }
     },
+    "/book/delete/{id}": {
+      "delete": {
+        "summary": "Deletar livro",
+        "tags": ["Books"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do livro",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Livro deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteBook" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
     "/loan/register": {
       "post": {
         "summary": "Registrar um empréstimo de livro",
@@ -684,6 +711,12 @@
             "type": "string",
             "example": "http://localhost:3334/uploads/livro1-capa.jpg"
           }
+        }
+      },
+      "DeleteBook": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string", "example": "Livro deletado com sucesso" }
         }
       },
       "LoanRegister": {
