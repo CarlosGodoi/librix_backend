@@ -20,9 +20,7 @@ export async function registerLoanController(req: Request, res: Response, next: 
   } catch (error) {
     if (error instanceof AppError) {
       res.status(400).send({ message: error.message });
-    } else {
-      console.error(error);
-      res.status(500).json({ error: 'Internal server error.' });
     }
+    next(error);
   }
 }

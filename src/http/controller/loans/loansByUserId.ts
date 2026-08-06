@@ -1,4 +1,5 @@
 import { makeGetLoansByUserIdUseCase } from '@/use-cases/factories/make-get-loans-by-user-id-use-case';
+import { AppError } from '@/utils/errors/appError';
 import { parsePagination } from '@/utils/parsePagination';
 import type { NextFunction, Request, Response } from 'express';
 
@@ -24,6 +25,9 @@ export async function getLoansByUserIdController(req: Request, res: Response, ne
 
     return res.status(200).json(result);
   } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(404).send({ message: error.message });
+    }
     next(error);
   }
 }

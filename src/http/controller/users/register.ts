@@ -24,9 +24,7 @@ export async function registerUserController(req: Request, res: Response, next: 
   } catch (error) {
     if (error instanceof AppError) {
       return res.status(400).json({ error: error.message });
-    } else {
-      console.error(error);
-      return res.status(500).json({ error: 'Internal server error.' });
     }
+    next(error);
   }
 }

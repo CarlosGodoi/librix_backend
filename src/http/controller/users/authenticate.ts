@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { authBodySchema } from './schemas/authSchema';
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case';
 import { JwtTokenProvider } from '@/services/token/jwt-token-provider';
+import { AppError } from '@/utils/errors/appError';
 
 export async function authenticateController(req: Request, res: Response, next: NextFunction) {
   const { email, password } = authBodySchema.parse(req.body);
@@ -28,7 +29,9 @@ export async function authenticateController(req: Request, res: Response, next: 
       refreshToken,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(401).json({ error: 'Authentication failed' });
+    if (error instanceof AppError) {
+      return res.status(404).send({ message: error.message });
+    }
+    next(error);
   }
 }

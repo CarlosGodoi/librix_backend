@@ -1,4 +1,5 @@
 import { makeGetAllUsersUseCase } from '@/use-cases/factories/make-get-all-users-use-case';
+import { AppError } from '@/utils/errors/appError';
 import { parsePagination } from '@/utils/parsePagination';
 import type { NextFunction, Request, Response } from 'express';
 
@@ -27,6 +28,9 @@ export async function getAllUsersController(req: Request, res: Response, next: N
 
     return res.status(200).json(result);
   } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(404).send({ message: error.message });
+    }
     next(error);
   }
 }

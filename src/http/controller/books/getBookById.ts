@@ -14,5 +14,6 @@ export async function getBookByIdController(req: Request, res: Response, next: N
     if (error) {
       return res.status(409).send({ message: error });
     }
+    next(error);
   }
 }

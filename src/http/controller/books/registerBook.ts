@@ -26,9 +26,7 @@ export async function registerBookController(req: Request, res: Response, next: 
   } catch (error) {
     if (error instanceof AppError) {
       return res.status(400).json({ message: error.message });
-    } else {
-      console.error(error);
-      return res.status(500).json({ error: 'Internal server error.' });
     }
+    next(error);
   }
 }

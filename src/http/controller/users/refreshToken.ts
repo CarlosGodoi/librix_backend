@@ -1,4 +1,5 @@
 import { makeRefreshTokenUseCase } from '@/use-cases/factories/make-refresh-token-use-case';
+import { AppError } from '@/utils/errors/appError';
 import type { NextFunction, Request, Response } from 'express';
 
 export async function refreshTokenController(req: Request, res: Response, next: NextFunction) {
@@ -15,7 +16,9 @@ export async function refreshTokenController(req: Request, res: Response, next: 
 
     return res.status(200).json({ accessToken });
   } catch (error) {
-    console.error('Error Refresh Token: ', error);
-    return res.status(401).json({ message: 'Invalid or expired refresh token.' });
+    if (error instanceof AppError) {
+      return res.status(404).send({ message: error.message });
+    }
+    next(error);
   }
 }
