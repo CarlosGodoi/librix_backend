@@ -13,14 +13,28 @@ interface ILoansQueryParams {
 export async function getAllLoansController(req: Request, res: Response, next: NextFunction) {
   const { skip, take, search, status } = req.query as ILoansQueryParams;
 
-  const getAllLoansUseCase = makeGetAllLoansUseCase();
+  try {
+    const pagination = parsePagination(skip, take);
 
-  const pagination = parsePagination(skip, take);
+    if (!pagination) {
+      return res.status(400).json({ error: 'skip and take must be valid numbers.' });
+    }
 
-  if (!pagination) {
-    return res.status(400).json({ error: 'skip and take must be valid numbers.' });
+    if (status && !Object.values(LoanStatus).includes(status as LoanStatus)) {
+      return res
+        .status(400)
+        .json({ error: `status must be one of: ${Object.values(LoanStatus).join(', ')}.` });
+    }
+
+    const getAllLoansUseCase = makeGetAllLoansUseCase();
+    const result = await getAllLoansUseCase.execute({
+      ...pagination,
+      search,
+      status: (status as LoanStatus) || undefined,
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
-  const result = await getAllLoansUseCase.execute(pagination);
-
-  return res.status(200).json(result);
 }

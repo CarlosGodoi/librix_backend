@@ -1,4 +1,5 @@
 import { makeGetAllUsersUseCase } from '@/use-cases/factories/make-get-all-users-use-case';
+import { parsePagination } from '@/utils/parsePagination';
 import type { NextFunction, Request, Response } from 'express';
 
 interface IUserQueryParams {
@@ -10,13 +11,22 @@ interface IUserQueryParams {
 export async function getAllUsersController(req: Request, res: Response, next: NextFunction) {
   const { take, skip, search } = req.query as IUserQueryParams;
 
-  const getAllUsersUseCase = makeGetAllUsersUseCase();
+  try {
+    const getAllUsersUseCase = makeGetAllUsersUseCase();
 
-  const result = await getAllUsersUseCase.execute({
-    skip: skip ? Number(skip) : 1,
-    take: take ? Number(take) : 10,
-    search,
-  });
+    const pagination = parsePagination(skip, take);
 
-  return res.status(200).json(result);
+    if (!pagination) {
+      return res.status(400).json({ error: 'skip and take must be valid numbers.' });
+    }
+
+    const result = await getAllUsersUseCase.execute({
+      ...pagination,
+      search,
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
 }
