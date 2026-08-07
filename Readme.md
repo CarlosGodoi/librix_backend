@@ -9,6 +9,7 @@ API REST para gerenciamento de bibliotecas, usuários, livros e empréstimos. O 
 - [O que é entregue ao usuário final](#o-que-é-entregue-ao-usuário-final)
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
+- [Implementação atual e fluxos concluídos](#implementação-atual-e-fluxos-concluídos)
 - [Pré-requisitos](#pré-requisitos)
 - [Configuração e execução](#configuração-e-execução)
 - [Variáveis de ambiente](#variáveis-de-ambiente)
@@ -77,6 +78,22 @@ O código é organizado em camadas:
 7. **Prisma** conecta os casos de uso ao PostgreSQL.
 
 O servidor só registra as rotas depois de conectar ao banco. Erros de domínio são tratados por `AppError`; erros não tratados retornam `500`.
+
+## Implementação atual e fluxos concluídos
+
+Além da base de autenticação, catálogo e empréstimos já descrita, a aplicação implementa um conjunto de fluxos completos de gestão e proteção que reforçam o uso real em produção local:
+
+- **Autorização por perfil com middleware dedicado**: a rota exige autenticação via JWT e valida o papel do usuário (`ADMIN`, `LIBRARIAN`, `VISITOR`) antes de permitir acesso. Erros de token inválido ou papel insuficiente retornam `401` e `403`, respectivamente.
+- **Refresh token**: a API já expõe o fluxo de renovação do access token em `/refresh`, validando o refresh token e emitindo um novo JWT com expiração curta.
+- **CRUD completo de usuários e livros**: além do cadastro, a API implementa atualização e exclusão de usuários e livros, com regras de autorização específicas para cada caso.
+- **Encerramento de empréstimo**: há rota de devolução de livro (`PATCH /loan/return/:id`) que altera o status para `RETURNED`, registra a data de devolução e impede devolução duplicada.
+- **Consulta de empréstimos por usuário e por período**: a aplicação já oferece listagem geral de empréstimos e consulta por usuário, incluindo dados do livro associado e paginação.
+- **Controle de negócio em casos de uso**: a lógica cobre regras como ausência de usuário/livro, data de vencimento inválida, exemplares indisponíveis, empréstimos duplicados, limite máximo de 3 livros em andamento e bloqueio para usuários com empréstimos atrasados.
+- **Tratamento centralizado de erros**: o servidor encapsula erros de domínio em `AppError` e também registra erros do Prisma para facilitar diagnóstico de banco e validações.
+- **Documentação viva com Swagger**: o pacote `swagger-ui-express` está configurado e a API expõe a documentação em `/api-docs`, incluindo os fluxos de autenticação, upload de capa, recomendações e status de empréstimo.
+- **Infraestrutura de dados e seed**: o projeto já prepara `Prisma`, migrações e seed do banco para carga inicial de usuários e livros, além do script de `backfill` para popular embeddings quando houver token do Hugging Face configurado.
+
+Esses itens mostram que a estrutura foi ampliada para uma API funcional com regras de negócio e controle operacional, e não apenas um esqueleto de endpoints.
 
 ## Pré-requisitos
 
@@ -201,8 +218,8 @@ Criados por `pnpm seed`:
 
 | Perfil | E-mail | Senha |
 | --- | --- | --- |
-| ADMIN | `admin@librix.com` | `Admin@123` |
-| LIBRARIAN | `bibliotecario@librix.com` | `Bibliotecario@123` |
+| ADMIN | `admin@librix.com` |
+| LIBRARIAN | `bibliotecario@librix.com` |
 | VISITOR | `visitante@librix.com` | `Visitante@123` |
 
 Essas credenciais são apenas para desenvolvimento. Altere-as em ambientes reais.
@@ -223,6 +240,10 @@ Perfis:
 - `LIBRARIAN`: operações de atendimento e gestão de usuários/livros;
 - `VISITOR`: perfil de visitante, sem permissões administrativas.
 
+A implementação atual também usa middleware robusto para proteger rotas e validar papel do usuário em cada chamada. O fluxo de refresh foi adicionado para permitir renovação do access token sem necessidade de reautenticação manual.
+
+> Observação importante: a aplicação atual possui alguns endpoints de gestão que foram implementados além do escopo inicial e já estão ativos na API. Isso inclui atualização de usuário, atualização e remoção de livros, retorno de empréstimos e listagem de empréstimos por usuário.
+
 ## Endpoints
 
 A documentação completa e testável está em `/api-docs`. A tabela abaixo reflete as rotas registradas atualmente na aplicação.
@@ -231,16 +252,22 @@ A documentação completa e testável está em `/api-docs`. A tabela abaixo refl
 | --- | --- | --- | --- |
 | `POST` | `/register` | Público | Cadastra usuário |
 | `POST` | `/auth` | Público | Autentica usuário |
-| `GET` | `/users` | Público na implementação atual | Lista usuários |
-| `GET` | `/user/:id` | `ADMIN`, `LIBRARIAN` | Busca usuário |
-| `PUT` | `/user/update/:id` | `ADMIN`, `LIBRARIAN` | Atualiza usuário |
-| `DELETE` | `/user/delete/:id` | `ADMIN`, `LIBRARIAN` | Remove usuário |
-| `POST` | `/book/register` | `LIBRARIAN` | Cadastra livro |
+| `POST` | `/refresh` | Público | Renova o access token via refresh token |
+| `GET` | `/users` | `ADMIN`, `LIBRARIAN` | Lista usuários |
+| `GET` | `/user/:id` | `ADMIN`, `LIBRARIAN`, `VISITOR` | Busca usuário |
+| `PUT` | `/user/update/:id` | `ADMIN`, `VISITOR` | Atualiza usuário |
+| `DELETE` | `/user/delete/:id` | `ADMIN` | Remove usuário |
+| `POST` | `/book/register` | `LIBRARIAN`, `ADMIN` | Cadastra livro |
 | `GET` | `/books` | Público | Lista livros com paginação e busca |
 | `GET` | `/book/:id` | Público | Busca livro por id |
+| `PUT` | `/book/update/:id` | `ADMIN`, `LIBRARIAN` | Atualiza livro |
+| `DELETE` | `/book/delete/:id` | `ADMIN`, `LIBRARIAN` | Remove livro |
 | `POST` | `/book/:id/upload` | Público na implementação atual | Envia capa do livro |
 | `GET` | `/books/recommendations/:userId` | Público na implementação atual | Gera recomendações para usuário |
 | `POST` | `/loan/register` | `ADMIN`, `LIBRARIAN` | Registra empréstimo |
+| `PATCH` | `/loan/return/:id` | `ADMIN`, `LIBRARIAN` | Finaliza empréstimo |
+| `GET` | `/loans` | `ADMIN`, `LIBRARIAN` | Lista todos os empréstimos |
+| `GET` | `/loans/user/:id` | `VISITOR` | Consulta empréstimos por usuário |
 
 ### Cadastro de usuário
 
@@ -268,6 +295,16 @@ curl -X POST http://localhost:3334/auth \
 ```
 
 Guarde o valor de `accessToken` retornado para as chamadas protegidas.
+
+### Renovação do token
+
+```bash
+curl -X POST http://localhost:3334/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<refresh-token>"}'
+```
+
+A resposta retorna um novo `accessToken`, mantendo a sesssão ativa sem a necessidade de novo login imediato.
 
 ### Listagem de livros
 
@@ -316,12 +353,21 @@ curl -X POST http://localhost:3334/loan/register \
 
 O caso de uso verifica a existência do usuário e do livro, disponibilidade de exemplares, limite de empréstimos ativos e duplicidade de empréstimo ativo para o mesmo livro.
 
+### Devolução do empréstimo
+
+```bash
+curl -X PATCH http://localhost:3334/loan/return/<loan-id> \
+  -H "Authorization: Bearer <accessToken>"
+```
+
+A rota marca o empréstimo como `RETURNED`, registra a data de devolução e bloqueia devoluções repetidas para o mesmo registro.
+
 ### Upload de capa
 
 O campo multipart deve se chamar `image`:
 
 ```bash
-curl -X POST http://localhost:3334/book/<book-id>/upload \
+curl -X POST http://localhost:3334/book/upload/<book-id> \
   -F "image=@./capa.jpg"
 ```
 
@@ -382,7 +428,9 @@ pnpm format            # formata os arquivos
 pnpm format:check      # verifica formatação
 ```
 
-Os testes de casos de uso utilizam repositórios em memória e cobrem, entre outros, autenticação, usuários, cadastro de livros, recomendações e empréstimos.
+Os testes de casos de uso utilizam repositórios em memória e cobrem, entre outros, autenticação, usuários, cadastro de livros, recomendações, empréstimos, atualização, exclusão e devolução de itens. A suíte também valida regras de negócio como senha inválida, empréstimo duplicado, limite de empréstimos ativos e atraso de devolução.
+
+A aplicação também foi estruturada para facilitar manutenção com testes unitários isolados por caso de uso e com implementação de repositórios em memória, permitindo validá-la sem depender do banco em cada execução.
 
 ## Estrutura do projeto
 
@@ -417,4 +465,4 @@ Os testes de casos de uso utilizam repositórios em memória e cobrem, entre out
 
 ## Licença
 
-O projeto está configurado com licença MIT, conforme o `package.json`.
+O projeto está configurado com licença MIT.
