@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
-import cloudinary from 'cloudinary';
+import cloudinary from '@/utils/cloudinary';
 import { Readable } from 'stream';
 import { makeUploadImageBookUseCase } from '@/use-cases/factories/make-upload-book-image-use-case';
 import { AppError } from '@/utils/errors/appError';
@@ -14,7 +14,7 @@ export async function uploadImageBookController(req: Request, res: Response, nex
     }
 
     const uploadResult = await new Promise<{ path: string }>((resolve, reject) => {
-      const stream = cloudinary.v2.uploader.upload_stream(
+      const stream = cloudinary.uploader.upload_stream(
         { folder: 'books', public_id: `${id}-${Date.now()}-${file.originalname}` },
         (error, result) => {
           if (error) return reject(error);

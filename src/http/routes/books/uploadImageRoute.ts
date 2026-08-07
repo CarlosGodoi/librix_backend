@@ -6,7 +6,7 @@ import { Router, type NextFunction, type Request, type Response } from 'express'
 const uploadImageBookRouter = Router();
 
 uploadImageBookRouter.post(
-  '/:id/upload',
+  '/upload/:id',
   upload.single('image'),
   autorize('ADMIN', 'LIBRARIAN'),
   async (req: Request, res: Response, next: NextFunction) => {
