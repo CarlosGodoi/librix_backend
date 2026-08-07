@@ -2,6 +2,7 @@ import type { BooksRepository } from '@/repositories/books-repository';
 import { RegisterBookUseCase } from '../registerBook';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { InMemoryBooksRepository } from '@/repositories/in-memory/in-memory-books-repository';
+
 let booksRepository: BooksRepository;
 let sut: RegisterBookUseCase;
 

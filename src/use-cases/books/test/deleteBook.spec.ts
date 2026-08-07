@@ -2,8 +2,9 @@ import { InMemoryBooksRepository } from '@/repositories/in-memory/in-memory-book
 import { DeleteBookUseCase } from '../deleteBook';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppError } from '@/utils/errors/appError';
+import type { BooksRepository } from '@/repositories/books-repository';
 
-let bookRepository: InMemoryBooksRepository;
+let bookRepository: BooksRepository;
 let sut: DeleteBookUseCase;
 
 describe('Delete Book Use Case', () => {

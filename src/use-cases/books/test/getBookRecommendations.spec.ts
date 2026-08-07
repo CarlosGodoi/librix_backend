@@ -2,6 +2,8 @@ import { describe, it, beforeEach, expect } from 'vitest';
 import { GetBookRecommendationsUseCase } from '../getBookRecommendations';
 import { InMemoryBooksRepository } from '@/repositories/in-memory/in-memory-books-repository';
 import { InMemoryLoansRepository } from '@/repositories/in-memory/in-memory-loans-repository';
+import type { BooksRepository } from '@/repositories/books-repository';
+import type { LoansRepository } from '@/repositories/loans-repository';
 
 class FakeEmbeddingsService {
   async getEmbedding(text: string): Promise<number[]> {
@@ -20,8 +22,8 @@ class FakeLLMService {
   }
 }
 
-let booksRepository: InMemoryBooksRepository;
-let loansRepository: InMemoryLoansRepository;
+let booksRepository: BooksRepository;
+let loansRepository: LoansRepository;
 let sut: GetBookRecommendationsUseCase;
 
 describe('Get Book Recommendations Use Case', () => {

@@ -2,6 +2,7 @@ import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-user
 import { RefreshTokenUseCase } from '../refreshToken';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppError } from '@/utils/errors/appError';
+import type { UsersRepository } from '@/repositories/users-repository';
 
 const tokenProvider = {
   verifyRefreshToken: vi.fn(),
@@ -9,7 +10,7 @@ const tokenProvider = {
   generateRefreshToken: vi.fn(),
 };
 
-let usersRepository: InMemoryUsersRepository;
+let usersRepository: UsersRepository;
 let sut: RefreshTokenUseCase;
 
 describe('Refresh Token Use Case', () => {

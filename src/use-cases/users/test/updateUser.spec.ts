@@ -2,8 +2,9 @@ import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-user
 import { describe, it, beforeEach, expect } from 'vitest';
 import { UpdateUserUserCase } from '../updateUser';
 import { AppError } from '@/utils/errors/appError';
+import type { UsersRepository } from '@/repositories/users-repository';
 
-let usersRepository: InMemoryUsersRepository;
+let usersRepository: UsersRepository;
 let sut: UpdateUserUserCase;
 
 describe('Update User Use Case', () => {

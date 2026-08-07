@@ -3,8 +3,9 @@ import { InMemoryUsersRepository } from '../../../repositories/in-memory/in-memo
 import { RegisterUserUserCase } from '../../users/register';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AppError } from '../../../utils/errors/appError';
+import type { UsersRepository } from '@/repositories/users-repository';
 
-let usersRepository: InMemoryUsersRepository;
+let usersRepository: UsersRepository;
 let sut: RegisterUserUserCase;
 
 describe('Register Use Case', () => {

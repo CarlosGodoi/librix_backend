@@ -2,8 +2,9 @@ import { InMemoryBooksRepository } from '@/repositories/in-memory/in-memory-book
 import { describe, it, beforeEach, expect } from 'vitest';
 import { UpdateBookUseCase } from '../updateBook';
 import { AppError } from '@/utils/errors/appError';
+import type { BooksRepository } from '@/repositories/books-repository';
 
-let booksRepository: InMemoryBooksRepository;
+let booksRepository: BooksRepository;
 let sut: UpdateBookUseCase;
 
 describe('Update User Use Case', () => {

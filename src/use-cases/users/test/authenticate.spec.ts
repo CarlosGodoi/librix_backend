@@ -3,8 +3,9 @@ import { AuthenticateUseCase } from '../authenticate';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { hash } from 'bcrypt';
 import { AppError } from '@/utils/errors/appError';
+import type { UsersRepository } from '@/repositories/users-repository';
 
-let usersRpository: InMemoryUsersRepository;
+let usersRpository: UsersRepository;
 let sut: AuthenticateUseCase;
 
 describe('Authenticate Use Case', () => {
