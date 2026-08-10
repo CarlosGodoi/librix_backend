@@ -74,8 +74,9 @@ O código é organizado em camadas:
 3. **Casos de uso** concentram as regras de negócio.
 4. **Factories** montam as dependências de cada caso de uso.
 5. **Repositórios** abstraem persistência, com implementações Prisma e em memória.
-6. **Serviços** encapsulam JWT, embeddings e geração de texto por LLM.
-7. **Prisma** conecta os casos de uso ao PostgreSQL.
+6. **InMemoryRepository** abstrações dos repositórios para realização de testes unitários sem necessitar bater no banco de dados.
+7. **Serviços** encapsulam JWT, embeddings e geração de texto por LLM.
+8. **Prisma** conecta os casos de uso ao PostgreSQL.
 
 O servidor só registra as rotas depois de conectar ao banco. Erros de domínio são tratados por `AppError`; erros não tratados retornam `500`.
 
