@@ -30,7 +30,7 @@ export async function authenticateController(req: Request, res: Response, next: 
     });
   } catch (error) {
     if (error instanceof AppError) {
-      return res.status(404).send({ message: error.message });
+      return res.status(401).send({ message: error.message });
     }
     next(error);
   }
