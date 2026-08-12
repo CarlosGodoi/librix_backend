@@ -58,14 +58,18 @@ prisma
 
     app.use(
       cors({
-        origin: (origin, callbackify) => {
-          if (!origin || allowedOrigins.includes(origin)) {
-            callbackify(null, true);
-          } else {
-            callbackify(new Error('Not allowed by CORS.'));
-          }
-        },
+        origin: 'http://localhost:3000',
         credentials: true,
+
+        // Usar essa config após publicar o front
+        // origin: (origin, callbackify) => {
+        //   if (!origin || allowedOrigins.includes(origin)) {
+        //     callbackify(null, true);
+        //   } else {
+        //     callbackify(new Error('Not allowed by CORS.'));
+        //   }
+        // },
+        // credentials: true,
       }),
     );
     app.use(express.json());
