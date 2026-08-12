@@ -9,10 +9,14 @@ export class RefreshTokenUseCase {
   ) {}
 
   async execute(refreshToken: string) {
-    const decoded = this.tokenProvider.verifyRefreshToken(refreshToken);
+    let decoded;
+    try {
+      decoded = this.tokenProvider.verifyRefreshToken(refreshToken);
+    } catch {
+      throw new AppError('error', 'Invalid or expired refresh token.');
+    }
 
     const user = await this.usersRepository.findById(decoded.userId);
-
     if (!user) {
       throw new AppError('error', 'User not found.');
     }

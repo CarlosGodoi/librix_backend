@@ -19,6 +19,6 @@ export async function refreshTokenController(req: Request, res: Response, next: 
     if (error instanceof AppError) {
       return res.status(404).send({ message: error.message });
     }
-    next(error);
+    return res.status(401).json({ message: 'Invalid refresh token' });
   }
 }
