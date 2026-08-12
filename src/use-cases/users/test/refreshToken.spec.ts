@@ -58,6 +58,7 @@ describe('Refresh Token Use Case', () => {
       throw new Error('jwt expired');
     });
 
-    await expect(sut.execute('expired-token')).rejects.toThrow('jwt expired');
+    await expect(sut.execute('expired-token')).rejects.toBeInstanceOf(AppError);
+    await expect(sut.execute('expired-token')).rejects.toThrow('Invalid or expired refresh token.');
   });
 });
