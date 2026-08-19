@@ -14,4 +14,8 @@ export class HuggingFaceEmbeddingService implements EmbeddingService {
 
     return response.data;
   }
+
+  embedText(text: string): Promise<number[]> {
+    return this.getEmbedding(text);
+  }
 }

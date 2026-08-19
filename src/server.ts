@@ -9,7 +9,6 @@ import { Prisma } from '../generated/prisma/client.ts';
 import { prisma } from './lib/prisma.ts';
 import { env } from './config/index.ts';
 import { router } from './http/routes/index.ts';
-import { callbackify } from 'node:util';
 
 const errorHandler: ErrorRequestHandler = (
   error: Error,
@@ -49,29 +48,12 @@ const errorHandler: ErrorRequestHandler = (
   res.status(500).json({ status: 'error', message: 'Internal Server Error.' });
 };
 
-const allowedOrigins = ['http://localhost:3000', 'https://librix-blue.vercel.app'];
-
 prisma
   .$connect()
   .then(() => {
     console.log('Dadabase has connected.');
 
-    app.use(
-      cors({
-        origin: 'http://localhost:3000',
-        credentials: true,
-
-        // Usar essa config após publicar o front
-        // origin: (origin, callbackify) => {
-        //   if (!origin || allowedOrigins.includes(origin)) {
-        //     callbackify(null, true);
-        //   } else {
-        //     callbackify(new Error('Not allowed by CORS.'));
-        //   }
-        // },
-        // credentials: true,
-      }),
-    );
+    app.use(cors());
     app.use(express.json());
 
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));

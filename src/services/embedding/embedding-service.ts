@@ -1,5 +1,6 @@
 export interface EmbeddingService {
   getEmbedding(text: string): Promise<number[]>;
+  embedText(text: string): Promise<number[]>;
 }
 
 export function cosineSimilarity(vecA: number[], vecB: number[]): number {

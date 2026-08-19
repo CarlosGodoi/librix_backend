@@ -17,6 +17,7 @@ import { refreshTokenRouter } from './user/refreshTokenRoute';
 import { updateBookRouter } from './books/updateBookRoute';
 import { getLoansByUserIdRouter } from './loans/getLoansByUserIdRoute';
 import { deleteBookRouter } from './books/deleteBook';
+import { chatRouter } from './books/chat';
 
 const router = Router();
 
@@ -37,6 +38,9 @@ router.use('/books', getBooksRecommendationsRouter);
 router.use('/book', getBookByIdRouter);
 router.use('/book', updateBookRouter);
 router.use('/book', deleteBookRouter);
+
+// Chat Route
+router.use('/chat', chatRouter);
 
 // Loans Routes
 router.use('/loan', registerLoanRouter);
