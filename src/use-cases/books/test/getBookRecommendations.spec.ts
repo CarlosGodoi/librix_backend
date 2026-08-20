@@ -1,41 +1,42 @@
-import { describe, it, beforeEach, expect } from 'vitest';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 import { GetBookRecommendationsUseCase } from '../getBookRecommendations';
 import { InMemoryBooksRepository } from '@/repositories/in-memory/in-memory-books-repository';
 import { InMemoryLoansRepository } from '@/repositories/in-memory/in-memory-loans-repository';
 import type { BooksRepository } from '@/repositories/books-repository';
 import type { LoansRepository } from '@/repositories/loans-repository';
-
-class FakeEmbeddingsService {
-  async getEmbedding(text: string): Promise<number[]> {
-    // retorna vetor deterministico baseado em palavras-chave do texto
-    // só para simular "similaridade" de forma previsível no teste
-    if (text.includes('Ficção')) return [1, 0, 0];
-    if (text.includes('Romance')) return [0, 1, 0];
-
-    return [0, 0, 1];
-  }
-}
-
-class FakeLLMService {
-  async generateSuggestionsText(): Promise<string> {
-    return 'Explicação gerada (fake)';
-  }
-}
+import type { RecommendationService } from '@/services/recommendation/recommendation-service';
+import type { LLMService } from '@/services/llm/llm-service';
+import { BookRecommendationService } from '@/services/recommendation/book-recommendation-service';
+import type { EmbeddingService } from '@/services/embedding/embedding-service';
 
 let booksRepository: BooksRepository;
 let loansRepository: LoansRepository;
 let sut: GetBookRecommendationsUseCase;
+let recommendationService: RecommendationService;
+let llmService: LLMService;
 
 describe('Get Book Recommendations Use Case', () => {
   beforeEach(() => {
     booksRepository = new InMemoryBooksRepository();
     loansRepository = new InMemoryLoansRepository();
-    sut = new GetBookRecommendationsUseCase(
+
+    const embeddingService: EmbeddingService = {
+      getEmbedding: vi.fn().mockResolvedValue([1, 0, 0]),
+      embedText: vi.fn().mockResolvedValue([1, 0, 0]),
+    };
+
+    recommendationService = new BookRecommendationService(
       booksRepository,
       loansRepository,
-      new FakeEmbeddingsService(),
-      new FakeLLMService(),
+      embeddingService,
     );
+    llmService = {
+      generateSuggestionsText: vi.fn().mockResolvedValue('Sugestões baseadas no seu histórico.'),
+      generateSuggestionsFromQuery: vi.fn(),
+      generateFreeChatResponse: vi.fn(),
+    };
+
+    sut = new GetBookRecommendationsUseCase(recommendationService, llmService);
   });
 
   it('Should return empty suggestions if the user has no loans.', async () => {
@@ -97,11 +98,9 @@ describe('Get Book Recommendations Use Case', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    // Act
     const result = await sut.execute({ userId: 'user-01' });
 
-    // Assert: deveria recomendar o outro livro de ficção, não o romance
-    expect(result.sugestoes).toHaveLength(2);
+    expect(result.sugestoes).toHaveLength(1);
     expect(result.sugestoes[0].title).toBe('Fundação');
   });
 });

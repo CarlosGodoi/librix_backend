@@ -3,6 +3,7 @@ import { PrismaBooksRepository } from '@/repositories/prisma/prisma-books-reposi
 import { PrismaLoansRepository } from '@/repositories/prisma/prisma-loans-repository';
 import { HuggingFaceEmbeddingService } from '@/services/embedding/huggingface-embedding-service';
 import { OpenRouterLLMService } from '@/services/llm/openrouter-llm-service';
+import { BookRecommendationService } from '@/services/recommendation/book-recommendation-service';
 import { GetBookRecommendationsUseCase } from '../books/getBookRecommendations';
 
 export function makeGetBookRecommendationsUseCase() {
@@ -10,10 +11,13 @@ export function makeGetBookRecommendationsUseCase() {
   const loansRepository = new PrismaLoansRepository();
   const embeddingService = new HuggingFaceEmbeddingService();
   const llmService = new OpenRouterLLMService();
-  const getBookRecommendationsUseCase = new GetBookRecommendationsUseCase(
+  const recommendationService = new BookRecommendationService(
     booksRepository,
     loansRepository,
     embeddingService,
+  );
+  const getBookRecommendationsUseCase = new GetBookRecommendationsUseCase(
+    recommendationService,
     llmService,
   );
 
