@@ -24,7 +24,7 @@ Explique brevemente, em português, por que esses livros candidatos combinam com
         const response = await axios.post(
           'https://openrouter.ai/api/v1/chat/completions',
           {
-            model: process.env.OPENROUTER_MODEL ?? 'openai/gpt-oss-20b:free',
+            model: process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
             max_tokens: 800,
@@ -66,7 +66,7 @@ Se os livros não forem exatamente do gênero pedido, seja honesto sobre isso e 
         const response = await axios.post(
           'https://openrouter.ai/api/v1/chat/completions',
           {
-            model: process.env.OPENROUTER_MODEL ?? 'openai/gpt-oss-20b:free',
+            model: process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free',
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
             max_tokens: 500,
@@ -103,7 +103,7 @@ Se o usuário perguntar algo fora do escopo de livros/biblioteca, redirecione ed
         const response = await axios.post(
           'https://openrouter.ai/api/v1/chat/completions',
           {
-            model: process.env.OPENROUTER_MODEL ?? 'openai/gpt-oss-20b:free',
+            model: process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free',
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: message },

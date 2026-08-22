@@ -18,7 +18,7 @@ Classifique a mensagem do usuário em UM dos tipos abaixo e responda APENAS com 
       const response = await axios.post(
         'https://openrouter.ai/api/v1/chat/completions',
         {
-          model: process.env.OPENROUTER_MODEL ?? 'openai/gpt-oss-20b:free',
+          model: process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage },
