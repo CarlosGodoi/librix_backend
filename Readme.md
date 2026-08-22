@@ -414,7 +414,7 @@ pnpm exec tsx scripts/backfill-embeddings.ts
 
 O script processa livros sem embedding, grava `embeddingUpdateAt` e espera 500 ms entre requisições para reduzir o risco de rate limit. Sem embeddings persistidos, não haverá candidatos semânticos para recomendação.
 
-O modelo do OpenRouter pode ser alterado por `OPENROUTER_MODEL`; o padrão atual é `openai/gpt-oss-20b:free`. O serviço faz até duas tentativas para gerar a explicação.
+O modelo do OpenRouter pode ser alterado por `OPENROUTER_MODEL`; o padrão atual é `meta-llama/llama-3.3-70b-instruct:free`. O serviço faz até duas tentativas para gerar a explicação.
 
 ## Testes e qualidade
 
