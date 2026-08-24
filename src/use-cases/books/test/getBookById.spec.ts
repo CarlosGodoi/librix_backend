@@ -23,7 +23,7 @@ describe('Get Book By Id Use Case', () => {
       isbn: 'ISBN 999-999-99-00-5',
       publisher: 'Editora 1',
       category: 'Ficção',
-      year: new Date(),
+      year: 2000,
       copies: 2,
       synopsis: 'Um livro de ficção',
       coverUrl: '',

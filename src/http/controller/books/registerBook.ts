@@ -16,7 +16,7 @@ export async function registerBookController(req: Request, res: Response, next: 
       isbn,
       publisher,
       category,
-      year: year ? new Date(year) : new Date(0),
+      year: year ? year : 0,
       copies,
       synopsis: synopsis || '',
       coverUrl: coverUrl || '',

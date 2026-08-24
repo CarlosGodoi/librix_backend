@@ -1,10 +1,10 @@
-import axios from 'axios';
+import { callChatCompletion } from '../llm/openrouter-client';
 import type { ChatIntent, IntentService } from './intent-service';
+
+const VALID_TYPES = ['recommend_by_history', 'recommend_by_query', 'chat'];
 
 export class OpenRouterIntentService implements IntentService {
   async classify(userMessage: string): Promise<ChatIntent> {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-
     const systemPrompt = `
 Você é um classificador de intenção para um chat de recomendação de livros.
 Classifique a mensagem do usuário em UM dos tipos abaixo e responda APENAS com JSON válido, sem markdown:
@@ -15,30 +15,36 @@ Classifique a mensagem do usuário em UM dos tipos abaixo e responda APENAS com 
 `;
 
     try {
-      const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage },
-          ],
-          temperature: 0,
-          max_tokens: 400,
-          response_format: { type: 'json_object' },
-          reasoning: { effort: 'low' },
-        },
-        { headers: { Authorization: `Bearer ${apiKey}` }, timeout: 30000 },
-      );
+      const data = await callChatCompletion({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage },
+        ],
+        temperature: 0,
+        max_tokens: 400,
+        response_format: { type: 'json_object' },
+        reasoning: { effort: 'low' },
+      });
 
-      return JSON.parse(response.data.choices[0].message.content);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 429) {
-        console.log('Rate limit atingido no OpenRouter (intent).');
-        throw new Error('RATE_LIMIT_EXCEEDED', { cause: error });
+      const rawContent: string = data.choices[0].message.content ?? '';
+
+      // alguns modelos ignoram "sem markdown" e mandam ```json ... ```
+      const cleaned = rawContent
+        .trim()
+        .replace(/^```(json)?/i, '')
+        .replace(/```$/, '')
+        .trim();
+
+      const parsed = JSON.parse(cleaned);
+
+      if (!parsed || typeof parsed !== 'object' || !VALID_TYPES.includes(parsed.type)) {
+        throw new Error(`Formato de intenção inválido: ${cleaned}`);
       }
-      // fallback seguro se o parse falhar ou outro erro acontecer
-      console.log('Falha ao classificar intenção, usando fallback "chat".');
+
+      return parsed as ChatIntent;
+    } catch (error) {
+      if (error instanceof Error && error.message === 'RATE_LIMIT_EXCEEDED') throw error;
+      console.log('Falha ao classificar intenção, usando fallback "chat".', error);
       return { type: 'chat', message: userMessage };
     }
   }

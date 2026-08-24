@@ -8,7 +8,7 @@ interface IRegisterBookRequest {
   isbn: string;
   publisher: string;
   category: string;
-  year: Date;
+  year: number;
   copies: number;
   synopsis?: string;
   coverUrl?: string;

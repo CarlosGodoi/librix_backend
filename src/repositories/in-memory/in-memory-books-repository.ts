@@ -17,7 +17,7 @@ export class InMemoryBooksRepository implements BooksRepository {
       isbn: data.isbn,
       publisher: data.publisher,
       category: data.category,
-      year: data.year ? new Date(data.year) : new Date(),
+      year: data.year ? data.year : 0,
       copies: data.copies,
       synopsis: data.synopsis ?? null,
       coverUrl: data.coverUrl ?? null,

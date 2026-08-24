@@ -35,13 +35,13 @@ model User {
 }
 
 model Book {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   title     String
   author    String
-  isbn      String   @unique
+  isbn      String  @unique
   publisher String
   category  String
-  year      DateTime
+  year      Int
   copies    Int
   synopsis  String?
   coverUrl  String?
