@@ -18,7 +18,7 @@ export async function returnedLoanController(req: Request, res: Response, next: 
     return res.status(200).send({ message: 'Empréstimo devolvido com sucesso.' });
   } catch (error) {
     if (error instanceof AppError) {
-      res.status(400).send({ message: error.message });
+      return res.status(400).send({ message: error.message });
     }
     next(error);
   }
