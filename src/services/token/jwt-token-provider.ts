@@ -5,7 +5,7 @@ import type { TokenProvider } from './token-provider';
 
 export class JwtTokenProvider implements TokenProvider {
   generateAccessToken(payload: TokenPayload): string {
-    return Jwt.sign(payload, env.JWT_SECRET, { expiresIn: '15m' });
+    return Jwt.sign(payload, env.JWT_SECRET, { expiresIn: '2m' });
   }
 
   generateRefreshToken(payload: RefreshTokenPayload): string {
