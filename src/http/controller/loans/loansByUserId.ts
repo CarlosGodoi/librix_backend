@@ -9,19 +9,27 @@ interface ILoansByUserQueryParams {
 }
 
 export async function getLoansByUserIdController(req: Request, res: Response, next: NextFunction) {
-  const { userId } = req.params as { userId: string };
+  const { id } = req.params as { id: string };
   const { skip, take } = req.query as ILoansByUserQueryParams;
 
   try {
-    const getLoansByUserIdUseCase = makeGetLoansByUserIdUseCase();
+    const requesterId = req.user?.id;
+    const requesterRole = req.user?.role;
 
+    if (requesterRole === 'VISITOR' && requesterId !== id) {
+      return res
+        .status(403)
+        .json({ message: "Permission denied. cannot access another user's loans." });
+    }
+
+    const getLoansByUserIdUseCase = makeGetLoansByUserIdUseCase();
     const pagination = parsePagination(skip, take);
 
     if (!pagination) {
       return res.status(400).json({ error: 'skip and take must be valid numbers.' });
     }
 
-    const result = await getLoansByUserIdUseCase.execute(userId, pagination);
+    const result = await getLoansByUserIdUseCase.execute(id, pagination);
 
     return res.status(200).json(result);
   } catch (error) {
