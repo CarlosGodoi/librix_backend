@@ -89,7 +89,7 @@ export class PrismaLoansRepository implements LoansRepository {
         orderBy: { loanDate: 'desc' },
         skip: pagination.skip,
         take: pagination.take,
-        include: { book: true },
+        include: { book: true, user: true },
       }),
       prisma.loan.count({ where }),
     ]);
