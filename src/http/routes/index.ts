@@ -48,5 +48,5 @@ router.use('/loan', registerLoanRouter);
 router.use('/loan', returnedLoanRouter);
 router.use('/loans', getAllLoansRouter);
 router.use('/loans', getLoansByUserIdRouter);
-router.use('/loans', internalRouter);
+router.use('/internal', internalRouter);
 export { router };
