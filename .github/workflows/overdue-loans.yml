@@ -1,0 +1,16 @@
+name: Mark Overdue Loans
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # todo dia às 03:00 UTC (meia-noite em Brasília, horário padrão)
+  workflow_dispatch: {} # permite rodar manualmente pela aba Actions, útil pra testar
+
+jobs:
+  mark-overdue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call API endpoint
+        run: |
+          curl -f -X POST https://sua-api.onrender.com/internal/loans/mark-overdue \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"
