@@ -18,6 +18,7 @@ import { updateBookRouter } from './books/updateBookRoute';
 import { getLoansByUserIdRouter } from './loans/getLoansByUserIdRoute';
 import { deleteBookRouter } from './books/deleteBook';
 import { chatRouter } from './books/chat';
+import { internalRouter } from './loans/markOverdueLoansRoute';
 
 const router = Router();
 
@@ -47,4 +48,5 @@ router.use('/loan', registerLoanRouter);
 router.use('/loan', returnedLoanRouter);
 router.use('/loans', getAllLoansRouter);
 router.use('/loans', getLoansByUserIdRouter);
+router.use('/loans', internalRouter);
 export { router };
