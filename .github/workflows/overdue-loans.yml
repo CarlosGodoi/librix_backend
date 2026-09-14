@@ -12,5 +12,5 @@ jobs:
     steps:
       - name: Call API endpoint
         run: |
-          curl -f -X POST https://sua-api.onrender.com/internal/loans/mark-overdue \
+          curl -f -X POST https://librix-backend.onrender.com \
             -H "x-cron-secret: ${{ secrets.CRON_SECRET }}"
