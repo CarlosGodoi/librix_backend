@@ -17,6 +17,7 @@ API REST para gerenciamento de bibliotecas, usuários, livros e empréstimos. O 
 - [Autenticação e perfis](#autenticação-e-perfis)
 - [Endpoints](#endpoints)
 - [Agente de IA e recomendações](#agente-de-ia-e-recomendações)
+- [Automação de empréstimos atrasados](#automação-de-empréstimos-atrasados)
 - [Testes e qualidade](#testes-e-qualidade)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Limitações e observações](#limitações-e-observações)
@@ -37,7 +38,9 @@ Bibliotecas precisam controlar usuários, catálogo, exemplares e circulação s
 - informar o estado do empréstimo (`INPROGRESS`, `RETURNED` ou `DELAYED`);
 - permitir busca e paginação do catálogo;
 - relacionar o histórico de empréstimos às preferências de leitura;
-- gerar recomendações acompanhadas de uma explicação em linguagem natural por um agente de IA.
+- gerar recomendações acompanhadas de uma explicação em linguagem natural por um agente de IA;
+- oferecer um chat para dúvidas e pedidos de recomendação em linguagem natural;
+- atualizar automaticamente o status dos empréstimos vencidos.
 
 ## O que é entregue ao usuário final
 
@@ -48,7 +51,9 @@ Para o usuário final, o sistema entrega:
 - registro e acompanhamento de empréstimos pela operação da biblioteca;
 - capas de livros armazenadas em serviço de mídia;
 - recomendações de até três livros semelhantes ao histórico recente por agente de IA;
+- chat de biblioteca para recomendações personalizadas, buscas semânticas e dúvidas gerais sobre livros;
 - explicação textual, em português, sobre o motivo das recomendações pelo agente de IA;
+- atualização automatizada de empréstimos vencidos para o status `DELAYED`;
 - uma interface Swagger para explorar e testar os endpoints.
 
 ## Tecnologias
@@ -61,6 +66,7 @@ Para o usuário final, o sistema entrega:
 - **JWT + bcrypt**: autenticação e proteção de senhas;
 - **Hugging Face**: geração de embeddings multilíngues;
 - **OpenRouter**: geração da explicação das recomendações;
+- **OpenRouter Chat Completions**: classificação de intenção e respostas conversacionais;
 - **Cloudinary + Multer**: upload e hospedagem de imagens;
 - **Vitest**: testes automatizados;
 - **Swagger UI**: documentação interativa.
@@ -93,6 +99,8 @@ Além da base de autenticação, catálogo e empréstimos já descrita, a aplica
 - **Tratamento centralizado de erros**: o servidor encapsula erros de domínio em `AppError` e também registra erros do Prisma para facilitar diagnóstico de banco e validações.
 - **Documentação viva com Swagger**: o pacote `swagger-ui-express` está configurado e a API expõe a documentação em `/api-docs`, incluindo os fluxos de autenticação, upload de capa, recomendações e status de empréstimo.
 - **Infraestrutura de dados e seed**: o projeto já prepara `Prisma`, migrações e seed do banco para carga inicial de usuários e livros, além do script de `backfill` para popular embeddings quando houver token do Hugging Face configurado.
+- **Chat de biblioteca com IA**: o endpoint de conversa classifica a mensagem em recomendação pelo histórico, recomendação por consulta ou chat livre. Consultas usam embeddings e filtram o catálogo por categoria quando identificada.
+- **Automação de empréstimos atrasados**: uma rota interna atualiza para `DELAYED` os empréstimos ainda em andamento cuja data de vencimento já passou. O workflow do GitHub Actions chama essa rota diariamente e também permite execução manual.
 
 Esses itens mostram que a estrutura foi ampliada para uma API funcional com regras de negócio e controle operacional, e não apenas um esqueleto de endpoints.
 
@@ -185,9 +193,12 @@ OPENROUTER_MODEL="openai/gpt-oss-20b:free"
 CLOUDINARY_CLOUD_NAME="seu-cloud-name"
 CLOUDINARY_API_KEY="sua-api-key"
 CLOUDINARY_API_SECRET="seu-api-secret"
+
+# Automação interna
+CRON_SECRET="seu-segredo-do-cron"
 ```
 
-`DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET` e `APP_HOST` são validadas na inicialização. Os tokens de IA e as credenciais do Cloudinary são necessários apenas para os fluxos correspondentes, mas recomendações e upload não funcionarão sem eles.
+`DATABASE_URL`, `JWT_SECRET`, `JWT_REFRESH_SECRET` e `APP_HOST` são validadas na inicialização. Os tokens de IA e as credenciais do Cloudinary são necessários apenas para os fluxos correspondentes, mas recomendações, chat e upload não funcionarão sem eles. `CRON_SECRET` deve ser igual ao segredo configurado nos secrets do GitHub Actions para que a rotina automática seja aceita.
 
 ## Banco de dados
 
@@ -211,17 +222,17 @@ Status de empréstimo:
 - `RETURNED`: livro devolvido;
 - `DELAYED`: empréstimo atrasado.
 
-Categorias aceitas no cadastro de livros: `Romance`, `Ficção`, `Ficção Científica`, `Fantasia`, `Autoajuda`, `Infantojuvenil`, `Biografia`, `HQ/Mangá`, `Poesia` e `Técnico`.
+Categorias aceitas no cadastro de livros: `Romance`, `Ficção`, `Ficção Científica`, `Ficção Distópica`, `Fantasia`, `Autoajuda`, `Desenvolvimento Pessoal`, `Ciência`, `História`, `Infatil`, `Literatura Infantil`, `Infantojuvenil`, `Biografia`, `HQ/Mangá`, `Poesia` e `Técnico`.
 
 ### Usuários iniciais
 
 Criados por `pnpm seed`:
 
-| Perfil | E-mail | Senha |
-| --- | --- | --- |
-| ADMIN | `admin@librix.com` |
+| Perfil    | E-mail                     | Senha           |
+| --------- | -------------------------- | --------------- |
+| ADMIN     | `admin@librix.com`         |
 | LIBRARIAN | `bibliotecario@librix.com` |
-| VISITOR | `visitante@librix.com` | `Visitante@123` |
+| VISITOR   | `visitante@librix.com`     | `Visitante@123` |
 
 Essas credenciais são apenas para desenvolvimento. Altere-as em ambientes reais.
 
@@ -233,7 +244,7 @@ O endpoint `/auth` retorna `accessToken` e `refreshToken`. Para rotas protegidas
 Authorization: Bearer <accessToken>
 ```
 
-O access token expira em 15 minutos e o refresh token em 7 dias. A implementação atual fornece a geração e validação do refresh token no serviço, mas não expõe uma rota HTTP de renovação.
+O access token expira em 15 minutos e o refresh token em 7 dias. O endpoint público `/refresh` valida o refresh token, verifica se o usuário ainda existe e emite um novo access token.
 
 Perfis:
 
@@ -249,26 +260,28 @@ A implementação atual também usa middleware robusto para proteger rotas e val
 
 A documentação completa e testável está em `/api-docs`. A tabela abaixo reflete as rotas registradas atualmente na aplicação.
 
-| Método | Rota | Acesso | Finalidade |
-| --- | --- | --- | --- |
-| `POST` | `/register` | Público | Cadastra usuário |
-| `POST` | `/auth` | Público | Autentica usuário |
-| `POST` | `/refresh` | Público | Renova o access token via refresh token |
-| `GET` | `/users` | `ADMIN`, `LIBRARIAN` | Lista usuários |
-| `GET` | `/user/:id` | `ADMIN`, `LIBRARIAN`, `VISITOR` | Busca usuário |
-| `PUT` | `/user/update/:id` | `ADMIN`, `VISITOR` | Atualiza usuário |
-| `DELETE` | `/user/delete/:id` | `ADMIN` | Remove usuário |
-| `POST` | `/book/register` | `LIBRARIAN`, `ADMIN` | Cadastra livro |
-| `GET` | `/books` | Público | Lista livros com paginação e busca |
-| `GET` | `/book/:id` | Público | Busca livro por id |
-| `PUT` | `/book/update/:id` | `ADMIN`, `LIBRARIAN` | Atualiza livro |
-| `DELETE` | `/book/delete/:id` | `ADMIN`, `LIBRARIAN` | Remove livro |
-| `POST` | `/book/:id/upload` | Público na implementação atual | Envia capa do livro |
-| `GET` | `/books/recommendations/:userId` | Público na implementação atual | Gera recomendações para usuário |
-| `POST` | `/loan/register` | `ADMIN`, `LIBRARIAN` | Registra empréstimo |
-| `PATCH` | `/loan/return/:id` | `ADMIN`, `LIBRARIAN` | Finaliza empréstimo |
-| `GET` | `/loans` | `ADMIN`, `LIBRARIAN` | Lista todos os empréstimos |
-| `GET` | `/loans/user/:id` | `VISITOR` | Consulta empréstimos por usuário |
+| Método   | Rota                             | Acesso                          | Finalidade                                |
+| -------- | -------------------------------- | ------------------------------- | ----------------------------------------- |
+| `POST`   | `/register`                      | Público                         | Cadastra usuário                          |
+| `POST`   | `/auth`                          | Público                         | Autentica usuário                         |
+| `POST`   | `/refresh`                       | Público                         | Renova o access token via refresh token   |
+| `GET`    | `/users`                         | `ADMIN`, `LIBRARIAN`            | Lista usuários                            |
+| `GET`    | `/user/:id`                      | `ADMIN`, `LIBRARIAN`, `VISITOR` | Busca usuário                             |
+| `PUT`    | `/user/update/:id`               | `ADMIN`, `VISITOR`              | Atualiza usuário                          |
+| `DELETE` | `/user/delete/:id`               | `ADMIN`                         | Remove usuário                            |
+| `POST`   | `/book/register`                 | `LIBRARIAN`, `ADMIN`            | Cadastra livro                            |
+| `GET`    | `/books`                         | Público                         | Lista livros com paginação e busca        |
+| `GET`    | `/book/:id`                      | Público                         | Busca livro por id                        |
+| `PUT`    | `/book/update/:id`               | `ADMIN`, `LIBRARIAN`            | Atualiza livro                            |
+| `DELETE` | `/book/delete/:id`               | `ADMIN`, `LIBRARIAN`            | Remove livro                              |
+| `POST`   | `/book/upload/:id`               | `ADMIN`, `LIBRARIAN`            | Envia capa do livro                       |
+| `GET`    | `/books/recommendations/:userId` | Público na implementação atual  | Gera recomendações para usuário           |
+| `POST`   | `/chat/:userId/message`          | `VISITOR`                       | Responde dúvidas e recomendações          |
+| `POST`   | `/loan/register`                 | `ADMIN`, `LIBRARIAN`            | Registra empréstimo                       |
+| `PATCH`  | `/loan/return/:id`               | `ADMIN`, `LIBRARIAN`            | Finaliza empréstimo                       |
+| `GET`    | `/loans`                         | `ADMIN`, `LIBRARIAN`            | Lista todos os empréstimos                |
+| `GET`    | `/loans/user/:id`                | `VISITOR`                       | Consulta empréstimos por usuário          |
+| `POST`   | `/internal/loans/mark-overdue`   | `CRON_SECRET`                   | Marca empréstimos vencidos como atrasados |
 
 ### Cadastro de usuário
 
@@ -329,14 +342,14 @@ curl -X POST http://localhost:3334/book/register \
     "isbn": "978-0132350884",
     "publisher": "Prentice Hall",
     "category": "Técnico",
-    "year": "01/01/2008",
+    "year": 2008,
     "copies": 5,
     "synopsis": "Princípios e práticas para escrever código legível.",
     "coverUrl": null
   }'
 ```
 
-Datas aceitam o formato `DD/MM/YYYY` nos schemas de cadastro.
+`year` deve ser um número inteiro, por exemplo `2008`.
 
 ### Cadastro de empréstimo
 
@@ -372,7 +385,7 @@ curl -X POST http://localhost:3334/book/upload/<book-id> \
   -F "image=@./capa.jpg"
 ```
 
-A imagem é processada pelo Multer e enviada ao Cloudinary; a URL retornada é persistida em `coverUrl`.
+A imagem é processada pelo Multer e enviada ao Cloudinary; a URL retornada é persistida em `coverUrl`. O endpoint exige um token com perfil `ADMIN` ou `LIBRARIAN`.
 
 ## Agente de IA e recomendações
 
@@ -414,7 +427,47 @@ pnpm exec tsx scripts/backfill-embeddings.ts
 
 O script processa livros sem embedding, grava `embeddingUpdateAt` e espera 500 ms entre requisições para reduzir o risco de rate limit. Sem embeddings persistidos, não haverá candidatos semânticos para recomendação.
 
-O modelo do OpenRouter pode ser alterado por `OPENROUTER_MODEL`; o padrão atual é `meta-llama/llama-3.3-70b-instruct:free`. O serviço faz até duas tentativas para gerar a explicação.
+O modelo do OpenRouter pode ser alterado por `OPENROUTER_MODEL`. O cliente tenta, nesta ordem, o modelo configurado e os fallbacks gratuitos `z-ai/glm-5.2:free`, `google/gemma-4-26b-a4b-it:free` e `nvidia/nemotron-nano-9b-v2:free` quando o modelo estiver indisponível ou limitado. O serviço faz até duas tentativas para gerar cada resposta.
+
+### Chat de biblioteca
+
+O chat usa o OpenRouter para classificar a intenção da mensagem antes de responder:
+
+- `recommend_by_history`: recomenda livros com base nos empréstimos do usuário;
+- `recommend_by_query`: interpreta gênero, tema, autor ou preferência textual, gera um embedding da consulta e busca até três livros semanticamente próximos;
+- `chat`: responde dúvidas gerais relacionadas ao acervo e à biblioteca.
+
+Endpoint protegido para usuários com perfil `VISITOR`:
+
+```bash
+curl -X POST http://localhost:3334/chat/<user-id>/message \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Quero um livro de ficção científica"}'
+```
+
+Resposta:
+
+```json
+{
+  "reply": "Encontrei estas opções..."
+}
+```
+
+Mensagens vazias são rejeitadas. Em caso de rate limit dos modelos, o chat informa que novas tentativas devem ser feitas em alguns minutos.
+
+## Automação de empréstimos atrasados
+
+O caso de uso de marcação de atrasos procura empréstimos com status `INPROGRESS` e `dueDate` anterior ao momento atual, atualizando-os para `DELAYED`. A operação retorna a quantidade de registros atualizados.
+
+A rota interna não usa JWT. Ela exige o cabeçalho `x-cron-secret`, cujo valor deve ser igual a `CRON_SECRET`:
+
+```bash
+curl -X POST http://localhost:3334/internal/loans/mark-overdue \
+  -H "x-cron-secret: <cron-secret>"
+```
+
+O workflow [overdue-loans.yml](.github/workflows/overdue-loans.yml) executa essa chamada todos os dias às `03:00 UTC` e pode ser disparado manualmente pela aba **Actions** do GitHub. O ambiente publicado atualmente é `https://librix-backend.onrender.com`.
 
 ## Testes e qualidade
 
@@ -443,6 +496,8 @@ A aplicação também foi estruturada para facilitar manutenção com testes uni
 │   └── migrations/            # Histórico de alterações do banco
 ├── scripts/
 │   └── backfill-embeddings.ts # Preenchimento de embeddings
+├── .github/workflows/
+│   └── overdue-loans.yml       # Rotina diária de empréstimos atrasados
 ├── generated/prisma/          # Cliente Prisma gerado
 ├── src/
 │   ├── server.ts              # Bootstrap, middlewares e servidor HTTP
@@ -454,7 +509,7 @@ A aplicação também foi estruturada para facilitar manutenção com testes uni
 │   │   └── routes/             # Rotas da API
 │   ├── lib/prisma.ts          # Cliente Prisma
 │   ├── repositories/          # Interfaces, DTOs, Prisma e memória
-│   ├── services/              # JWT, embeddings e LLM
+│   ├── services/              # JWT, embeddings, intenção e LLM
 │   ├── use-cases/             # Regras de negócio e factories
 │   └── utils/                 # Cloudinary, Multer, paginação e erros
 ├── docker-compose.yml         # PostgreSQL local
