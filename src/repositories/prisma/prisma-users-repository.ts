@@ -75,6 +75,9 @@ export class PrismaUsersRepository implements UsersRepository {
       where: {
         id,
       },
+      omit: {
+        password: true,
+      },
     });
 
     return user;

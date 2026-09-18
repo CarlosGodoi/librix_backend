@@ -5,7 +5,7 @@ import type { User } from 'generated/prisma/client';
 export class GetUserByIdUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
-  async execute(id: string): Promise<User | null> {
+  async execute(id: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
