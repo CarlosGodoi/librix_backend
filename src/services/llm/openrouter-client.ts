@@ -2,9 +2,9 @@ import axios, { type AxiosRequestConfig } from 'axios';
 
 const FREE_MODELS_FALLBACK = [
   process.env.OPENROUTER_MODEL,
-  'z-ai/glm-5.2:free',
-  'google/gemma-4-26b-a4b-it:free',
-  'nvidia/nemotron-nano-9b-v2:free',
+  'dots-studio/dots-3-note-preview:free',
+  'poolside/laguna-s-2.1:free',
+  'nvidia/nemotron-3.5-lightning:free',
 ].filter(Boolean) as string[];
 
 interface ChatCompletionPayload {
