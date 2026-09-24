@@ -1,15 +1,14 @@
 import { Prisma, type Book } from 'generated/prisma/client';
 import type { BookCreateInput } from 'generated/prisma/models';
-import type { BooksRepository } from '../books-repository';
+import type { BooksRepository, BookWithoutEmbedding } from '../books-repository';
 import type { IUpdateBookDTO, IUploadImageBookDTO } from '../dto/book-dto';
 import type { IPagination } from '../interface/pagination';
 import { prisma } from '@/lib/prisma';
 import type { GetAllParams } from './types/getAllParams';
 import { Pagination } from '@/utils/paginationCalc';
 import { AppError } from '@/utils/errors/appError';
-
 export interface IBooksParamsGetAll extends IPagination {
-  books: Book[];
+  books: BookWithoutEmbedding[];
   total: number;
   totalPage?: number;
 }
@@ -49,6 +48,7 @@ export class PrismaBooksRepository implements BooksRepository {
       prisma.book.findMany({
         where,
         orderBy: [{ title: 'asc' }, { author: 'asc' }],
+        omit: { embedding: true, embeddingUpdateAt: true },
         skip: pagination.skip,
         take: pagination.take,
       }),
@@ -69,6 +69,7 @@ export class PrismaBooksRepository implements BooksRepository {
       where: {
         id,
       },
+      omit: { embedding: true, embeddingUpdateAt: true },
     });
 
     return book;
